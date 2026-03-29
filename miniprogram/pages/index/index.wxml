@@ -1,33 +1,33 @@
 <view class="page">
   <view class="nb-card" wx:if="{{overview}}">
-    <view class="nb-title">今日支出</view>
+    <view class="nb-title">{{i18n.todayExpense}}</view>
     <view class="big">{{display.todayExpense}}</view>
-    <text class="nb-muted">共 {{display.todayCount}} 笔</text>
+    <text class="nb-muted">{{display.todayCount}}</text>
   </view>
 
   <view class="nb-card" wx:if="{{overview}}">
-    <view class="nb-title">本月预算</view>
+    <view class="nb-title">{{i18n.monthBudget}}</view>
     <view class="row">
       <text>{{display.budgetLine}}</text>
     </view>
     <view class="bar-bg">
       <view class="bar-fill {{budgetBarClass}}" style="width: {{budgetPercent}}%;"></view>
     </view>
-    <text class="nb-muted">还可用 {{display.budgetRemain}}</text>
+    <text class="nb-muted">{{display.budgetRemain}}</text>
   </view>
 
   <view class="nb-card" wx:if="{{overview}}">
-    <view class="nb-title">资产总览</view>
+    <view class="nb-title">{{i18n.assetsOverview}}</view>
     <view class="big">{{display.assetsTotal}}</view>
     <view class="split">
-      <text>多账户汇总</text>
-      <text class="nb-muted">详见账户管理</text>
+      <text>{{i18n.multiAccount}}</text>
+      <text class="nb-muted">{{i18n.seeAccounts}}</text>
     </view>
   </view>
 
   <view class="actions">
-    <button class="mini primary" bindtap="goRecord">记一笔</button>
-    <button class="mini" bindtap="goTransfer">转账</button>
-    <button class="mini" bindtap="goReports">查看报表</button>
+    <button class="mini primary" bindtap="goRecord">{{i18n.recordBtn}}</button>
+    <button class="mini" bindtap="goTransfer">{{i18n.transferBtn}}</button>
+    <button class="mini" bindtap="goReports">{{i18n.reportsBtn}}</button>
   </view>
 </view>

@@ -2,23 +2,23 @@
   <view class="header nb-card">
     <image class="avatar" src="{{user.avatarUrl || '/images/tab/profile.png'}}" mode="aspectFill" />
     <view class="info">
-      <text class="nick">{{user.nickName || '用户'}}</text>
-      <text class="nb-muted">{{user.phone || '微信登录'}}</text>
+      <text class="nick">{{user.nickName || i18n.user}}</text>
+      <text class="nb-muted">{{user.phone || i18n.wechatLogin}}</text>
     </view>
   </view>
 
-  <view class="section">我的工具</view>
-  <navigator url="/pages/profile/accounts" class="cell">账户管理</navigator>
-  <navigator url="/pages/profile/budget" class="cell">预算设置</navigator>
-  <navigator url="/pages/profile/recurring-income" class="cell">周期收入</navigator>
-  <navigator url="/pages/profile/installment" class="cell">分期管理</navigator>
-  <navigator url="/pages/profile/salary" class="cell">薪资控制</navigator>
-  <navigator url="/pages/profile/import" class="cell">导入账单</navigator>
-  <navigator url="/pages/profile/export" class="cell">数据导出</navigator>
+  <view class="section">{{i18n.myTools}}</view>
+  <navigator url="/pages/profile/accounts" class="cell">{{i18n.accounts}}</navigator>
+  <navigator url="/pages/profile/budget" class="cell">{{i18n.budget}}</navigator>
+  <navigator url="/pages/profile/recurring-income" class="cell">{{i18n.recurringIncome}}</navigator>
+  <navigator url="/pages/profile/installment" class="cell">{{i18n.installment}}</navigator>
+  <navigator url="/pages/profile/salary" class="cell">{{i18n.salary}}</navigator>
+  <navigator url="/pages/profile/import" class="cell">{{i18n.import}}</navigator>
+  <navigator url="/pages/profile/export" class="cell">{{i18n.export}}</navigator>
 
-  <view class="section">设置</view>
-  <navigator url="/pages/profile/settings" class="cell">个人设置</navigator>
-  <navigator url="/pages/ledger/actions" class="cell">操作中心</navigator>
+  <view class="section">{{i18n.settings}}</view>
+  <navigator url="/pages/profile/settings" class="cell">{{i18n.personalSettings}}</navigator>
+  <navigator url="/pages/ledger/actions" class="cell">{{i18n.actionCenter}}</navigator>
 
-  <button class="logout" bindtap="logout">退出登录</button>
+  <button class="logout" bindtap="logout">{{i18n.logout}}</button>
 </view>

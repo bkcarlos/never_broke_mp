@@ -7,6 +7,7 @@ Page({
     date: '',
     list: [],
     summary: null,
+    i18n: {}
   },
 
   onShow() {
@@ -14,7 +15,21 @@ Page({
     if (!this.data.date) {
       this.setData({ date: formatDate(new Date()) })
     }
+    this.loadI18n()
     this.loadDaily()
+  },
+
+  loadI18n() {
+    const app = getApp()
+    const t = app.globalData.i18n.t.bind(app.globalData.i18n)
+    this.setData({
+      i18n: {
+        income: t('ledger.income'),
+        expense: t('ledger.expense'),
+        noRecord: t('ledger.noRecord'),
+        noNote: t('ledger.noNote')
+      }
+    })
   },
 
   onDateChange(e) {
@@ -46,7 +61,8 @@ Page({
         },
       })
     } catch (e) {
-      wx.showToast({ title: e.message || '加载失败', icon: 'none' })
+      const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
+      wx.showToast({ title: e.message || t('common.loadFailed'), icon: 'none' })
     }
   },
 

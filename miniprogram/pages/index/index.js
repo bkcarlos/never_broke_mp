@@ -9,6 +9,7 @@ Page({
     budgetPercent: 0,
     budgetBarClass: '',
     display: {},
+    i18n: {}
   },
 
   async onShow() {
@@ -16,8 +17,27 @@ Page({
       wx.reLaunch({ url: '/pages/login/index' })
       return
     }
+    this.loadI18n()
     await this.loadSettings()
     await this.loadOverview()
+  },
+
+  loadI18n() {
+    const app = getApp()
+    const t = app.globalData.i18n.t.bind(app.globalData.i18n)
+    this.setData({
+      i18n: {
+        todayExpense: t('home.todayExpense'),
+        monthBudget: t('home.monthBudget'),
+        budgetRemain: t('home.budgetRemain'),
+        assetsOverview: t('home.assetsOverview'),
+        multiAccount: t('home.multiAccount'),
+        seeAccounts: t('home.seeAccounts'),
+        recordBtn: t('home.recordBtn'),
+        transferBtn: t('home.transferBtn'),
+        reportsBtn: t('home.reportsBtn')
+      }
+    })
   },
 
   async loadSettings() {
@@ -41,20 +61,23 @@ Page({
       else if (pct >= 50) budgetBarClass = 'warn'
       const hide = this.data.hideAmount
       const fmt = (v) => (hide ? '****' : formatMoney(v))
+      const app = getApp()
+      const t = app.globalData.i18n.t.bind(app.globalData.i18n)
       this.setData({
         overview,
         budgetPercent: pct,
         budgetBarClass,
         display: {
           todayExpense: fmt(overview.today.expense),
-          todayCount: overview.today.count,
+          todayCount: t('home.count', overview.today.count),
           budgetLine: `${fmt(overview.budget.used)} / ${fmt(overview.budget.total)}`,
-          budgetRemain: fmt(overview.budget.remain),
+          budgetRemain: t('home.budgetRemain', fmt(overview.budget.remain)),
           assetsTotal: fmt(overview.assets.total),
         },
       })
     } catch (e) {
-      wx.showToast({ title: e.message || '加载失败', icon: 'none' })
+      const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
+      wx.showToast({ title: e.message || t('common.loadFailed'), icon: 'none' })
     }
   },
 
