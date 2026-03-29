@@ -1,8 +1,16 @@
-/** 格式化金额（元） */
+const CURRENCY_SYMBOL = {
+  CNY: '¥',
+  HKD: 'HK$',
+  USD: '$',
+  EUR: '€',
+}
+
+/** 格式化金额（默认人民币；可按账户币种传入 HKD/USD/EUR 等） */
 function formatMoney(amount, currency = 'CNY') {
   const n = Number(amount)
   if (Number.isNaN(n)) return '—'
-  const sym = currency === 'CNY' ? '¥' : currency + ' '
+  const code = currency || 'CNY'
+  const sym = CURRENCY_SYMBOL[code] || `${code} `
   return sym + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 

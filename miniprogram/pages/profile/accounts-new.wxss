@@ -62,10 +62,43 @@
   font-size: 28rpx;
 }
 
-.radio-line {
-  display: block;
-  margin-bottom: 12rpx;
-  font-size: 28rpx;
+.type-scroll {
+  width: 100%;
+  margin-bottom: 4rpx;
+}
+
+.type-group {
+  display: inline-flex;
+  flex-direction: row;
+  background: #fff;
+  border-radius: 12rpx;
+  border: 1px solid #e5e5e5;
+  overflow: hidden;
+}
+
+.type-btn {
+  flex-shrink: 0;
+  min-width: 128rpx;
+  text-align: center;
+  padding: 22rpx 20rpx;
+  font-size: 26rpx;
+  color: #666;
+  border-right: 1px solid #e5e5e5;
+  box-sizing: border-box;
+}
+
+.type-btn:last-child {
+  border-right: none;
+}
+
+.type-btn.on {
+  background: #1aad19;
+  color: #fff;
+  font-weight: 600;
+}
+
+.type-btn.disabled {
+  opacity: 0.55;
 }
 
 .btn {

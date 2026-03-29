@@ -2,6 +2,22 @@
   <view class="toolbar">
     <navigator url="/pages/profile/accounts-new" class="add">+ 新建</navigator>
   </view>
+  <scroll-view scroll-x class="filter-scroll" enable-flex="{{true}}" show-scrollbar="{{false}}">
+    <view class="filter-row">
+      <view
+        wx:for="{{filterTabs}}"
+        wx:key="key"
+        class="filter-chip {{filterKey === item.key ? 'on' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="onFilterTap"
+      >
+        {{item.label}}
+      </view>
+    </view>
+  </scroll-view>
+  <view class="empty-hint nb-muted" wx:if="{{filterKey !== 'all' && !groups.length && groupsAll.length}}">
+    该类型暂无账户
+  </view>
   <view class="nb-card" wx:if="{{total !== ''}}">
     <text class="nb-muted">总资产（简算）</text>
     <view class="big">{{total}}</view>

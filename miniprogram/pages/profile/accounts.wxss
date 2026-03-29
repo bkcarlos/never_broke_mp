@@ -7,6 +7,44 @@
   text-align: right;
 }
 
+.filter-scroll {
+  width: 100%;
+  white-space: nowrap;
+  padding: 0 24rpx 16rpx;
+  box-sizing: border-box;
+}
+
+.filter-row {
+  display: inline-flex;
+  flex-direction: row;
+  gap: 16rpx;
+  padding-bottom: 4rpx;
+}
+
+.filter-chip {
+  display: inline-block;
+  flex-shrink: 0;
+  padding: 12rpx 28rpx;
+  background: #fff;
+  border-radius: 999rpx;
+  font-size: 26rpx;
+  color: #333;
+  border: 1px solid #e5e5e5;
+}
+
+.filter-chip.on {
+  background: #1aad19;
+  color: #fff;
+  border-color: #1aad19;
+  font-weight: 600;
+}
+
+.empty-hint {
+  padding: 24rpx;
+  font-size: 26rpx;
+  text-align: center;
+}
+
 .add {
   display: inline-block;
   background: #1aad19;

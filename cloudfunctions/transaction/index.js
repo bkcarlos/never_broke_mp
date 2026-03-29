@@ -14,7 +14,12 @@ function fail(code, message) {
 async function getAccount(col, id, openid) {
   const doc = await col.doc(id).get()
   if (!doc.data || doc.data.openid !== openid) return null
+  if (doc.data.archived === true) return null
   return doc.data
+}
+
+function creditLimitTotal(acct) {
+  return Number(acct.creditLimit || 0) + Number(acct.tempLimit || 0)
 }
 
 /** 支出后账户余额变化 */
@@ -91,14 +96,20 @@ exports.main = async (event) => {
       if (!date) return fail(400, '缺少日期')
 
       if (type === 'transfer') {
-        if (!accountId || !toAccountId || accountId === toAccountId) {
-          return fail(400, '转账账户无效')
+        const fromAccountId = event.fromAccountId || accountId
+        const toAccId = event.toAccountId
+        if (!fromAccountId || !toAccId || fromAccountId === toAccId) {
+          return fail(400, '转账须指定 fromAccountId 与 toAccountId 且不能相同')
         }
-        const from = await getAccount(accCol, accountId, openid)
-        const to = await getAccount(accCol, toAccountId, openid)
+        const from = await getAccount(accCol, fromAccountId, openid)
+        const to = await getAccount(accCol, toAccId, openid)
         if (!from || !to) return fail(404, '账户不存在')
-        if (from.type !== 'credit') {
-          if (Number(from.balance || 0) < amt) return fail(400, '转出余额不足')
+        if (from.type === 'credit') {
+          const lim = creditLimitTotal(from)
+          const used = Number(from.balance || 0)
+          if (used + amt > lim) return fail(400, '转出额度不足')
+        } else if (Number(from.balance || 0) < amt) {
+          return fail(400, '转出余额不足')
         }
         const newFrom =
           from.type === 'credit'
@@ -108,10 +119,10 @@ exports.main = async (event) => {
           to.type === 'credit'
             ? Math.max(0, Number(to.balance || 0) - amt)
             : Number(to.balance || 0) + amt
-        await accCol.doc(accountId).update({
+        await accCol.doc(fromAccountId).update({
           data: { balance: newFrom, updatedAt: now },
         })
-        await accCol.doc(toAccountId).update({
+        await accCol.doc(toAccId).update({
           data: { balance: newTo, updatedAt: now },
         })
         const add = await txCol.add({
@@ -122,8 +133,8 @@ exports.main = async (event) => {
             category: '转账',
             date,
             note,
-            accountId,
-            toAccountId,
+            accountId: fromAccountId,
+            toAccountId: toAccId,
             installmentPlanId: installmentPlanId || '',
             createdAt: now,
             updatedAt: now,
@@ -146,6 +157,9 @@ exports.main = async (event) => {
           return fail(400, '余额不足')
         }
         newBal = applyExpenseBalance(acct, amt)
+        if (acct.type === 'credit' && newBal > creditLimitTotal(acct)) {
+          return fail(400, '超出信用额度')
+        }
       } else {
         newBal = applyIncomeBalance(acct, amt)
       }

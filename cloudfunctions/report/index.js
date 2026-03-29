@@ -34,8 +34,24 @@ exports.main = async (event) => {
       const d = new Date()
       const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
       const { start, end } = monthRange(ym)
+      const settingsCol = db.collection('user_settings')
 
-      const dayTx = await txCol.where({ openid, date: today }).get()
+      const [dayTx, monthTx, b, accs, settingsRow] = await Promise.all([
+        txCol.where({ openid, date: today }).get(),
+        txCol
+          .where({
+            openid,
+            date: _.gte(start).and(_.lte(end)),
+          })
+          .get(),
+        budgetCol
+          .where({ openid, year: d.getFullYear(), month: d.getMonth() + 1 })
+          .limit(1)
+          .get(),
+        accCol.where({ openid, archived: _.neq(true) }).get(),
+        settingsCol.where({ openid }).limit(1).get(),
+      ])
+
       let todayExpense = 0
       let todayCount = 0
       dayTx.data.forEach((t) => {
@@ -45,41 +61,34 @@ exports.main = async (event) => {
         }
       })
 
-      const monthTx = await txCol
-        .where({
-          openid,
-          date: _.gte(start).and(_.lte(end)),
-        })
-        .get()
       let monthExpense = 0
       monthTx.data.forEach((t) => {
         if (t.type === 'expense') monthExpense += Number(t.amount || 0)
       })
 
-      const b = await budgetCol
-        .where({ openid, year: d.getFullYear(), month: d.getMonth() + 1 })
-        .limit(1)
-        .get()
       const budgetDoc = b.data[0]
       const totalBudget = budgetDoc ? Number(budgetDoc.totalBudget || 0) : 0
 
-      const accs = await accCol.where({ openid, archived: _.neq(true) }).get()
+      const hideAmount = settingsRow.data[0] ? !!settingsRow.data[0].hideAmount : false
       let totalAssets = 0
-      const byType = { savings: 0, credit: 0, cash: 0, investment: 0 }
+      const byType = { cash: 0, bank: 0, wallet: 0, credit: 0 }
       accs.data.forEach((a) => {
         if (a.type === 'credit') {
-          const avail = Number(a.creditLimit || 0) - Number(a.balance || 0)
+          const lim = Number(a.creditLimit || 0) + Number(a.tempLimit || 0)
+          const avail = Math.max(0, lim - Number(a.balance || 0))
           byType.credit += avail
           totalAssets += avail
         } else {
           const bal = Number(a.balance || 0)
           totalAssets += bal
-          if (byType[a.type] !== undefined) byType[a.type] += bal
+          const t = a.type === 'savings' ? 'bank' : a.type === 'investment' ? 'cash' : a.type
+          if (byType[t] !== undefined) byType[t] += bal
           else byType.cash += bal
         }
       })
 
       return ok({
+        hideAmount,
         today: { expense: todayExpense, count: todayCount },
         budget: {
           used: monthExpense,
@@ -188,6 +197,7 @@ exports.main = async (event) => {
       const map = {}
       r.data.forEach((t) => {
         const ds = t.date
+        if (t.type === 'transfer') return
         if (!map[ds]) map[ds] = { date: ds, income: 0, expense: 0, count: 0 }
         map[ds].count += 1
         if (t.type === 'income') map[ds].income += Number(t.amount || 0)

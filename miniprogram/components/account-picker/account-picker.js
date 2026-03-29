@@ -1,3 +1,5 @@
+const C = require('../../utils/constants.js')
+
 Component({
   properties: {
     accounts: { type: Array, value: [] },
@@ -25,7 +27,7 @@ Component({
     sync() {
       const list = this.properties.accounts || []
       const labels = list.map((a) => ({
-        label: `${a.name} (${a.type})`,
+        label: a.name || `${C.ACCOUNT_TYPE_LABELS[a.type] || a.type}`,
         id: a._id,
       }))
       let idx = list.findIndex((a) => a._id === this.properties.value)

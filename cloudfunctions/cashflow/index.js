@@ -41,7 +41,8 @@ exports.main = async (event) => {
     let totalBalance = 0
     accs.data.forEach((a) => {
       if (a.type === 'credit') {
-        totalBalance += Number(a.creditLimit || 0) - Number(a.balance || 0)
+        const lim = Number(a.creditLimit || 0) + Number(a.tempLimit || 0)
+        totalBalance += Math.max(0, lim - Number(a.balance || 0))
       } else {
         totalBalance += Number(a.balance || 0)
       }

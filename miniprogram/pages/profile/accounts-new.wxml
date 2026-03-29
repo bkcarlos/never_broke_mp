@@ -5,39 +5,88 @@
   </view>
   <view class="field">
     <text class="label">账户类型</text>
-    <radio-group bindchange="onType">
-      <label wx:for="{{types}}" wx:key="value" class="radio-line">
-        <radio value="{{item.value}}" checked="{{type === item.value}}" disabled="{{isEdit}}" /> {{item.label}}
-      </label>
-    </radio-group>
+    <scroll-view scroll-x class="type-scroll" enable-flex="{{true}}" show-scrollbar="{{false}}">
+      <view class="type-group">
+        <view
+          wx:for="{{types}}"
+          wx:key="value"
+          class="type-btn {{type === item.value ? 'on' : ''}} {{isEdit ? 'disabled' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="onTypeTap"
+        >
+          {{item.label}}
+        </view>
+      </view>
+    </scroll-view>
   </view>
-  <view class="field">
-    <text class="label">账户名称</text>
-    <input class="inp" placeholder="如 工资卡" value="{{name}}" bindinput="onName" />
-  </view>
-  <view class="field">
-    <text class="label">银行</text>
+
+  <view class="field" wx:if="{{type==='bank' || type==='credit' || type==='savings'}}">
+    <text class="label">机构 / 发卡行</text>
     <picker range="{{banks}}" value="{{bankIndex}}" bindchange="onBankPick">
       <view class="inp">{{banks[bankIndex] || '请选择'}}</view>
     </picker>
     <text class="nb-muted small-tip" wx:if="{{bankIndex === banks.length - 1}}">选择「其他」时可在下方填写</text>
-    <input wx:if="{{bankIndex === banks.length - 1}}" class="inp mt" placeholder="银行名称" value="{{bank}}" bindinput="onBankInput" />
+    <input wx:if="{{bankIndex === banks.length - 1}}" class="inp mt" placeholder="机构名称" value="{{bank}}" bindinput="onBankInput" />
   </view>
+
+  <view class="field" wx:if="{{type==='wallet'}}">
+    <text class="label">机构</text>
+    <scroll-view scroll-x class="type-scroll" enable-flex="{{true}}" show-scrollbar="{{false}}">
+      <view class="type-group">
+        <view
+          wx:for="{{walletInstitutions}}"
+          wx:key="value"
+          class="type-btn {{walletInstIndex === index ? 'on' : ''}}"
+          data-index="{{index}}"
+          bindtap="onWalletInstTap"
+        >
+          {{item.label}}
+        </view>
+      </view>
+    </scroll-view>
+    <input wx:if="{{walletInstitutions[walletInstIndex].value === 'other'}}" class="inp mt" placeholder="说明" value="{{walletCustom}}" bindinput="onWalletCustom" />
+  </view>
+
+  <view class="field" wx:if="{{type==='bank' || type==='credit' || type==='savings'}}">
+    <text class="label">卡号尾号（选填）</text>
+    <input class="inp" type="number" maxlength="4" placeholder="2–4 位数字" value="{{cardLast4}}" bindinput="onCardLast4" />
+  </view>
+
   <view class="field">
-    <text class="label">初始余额 / 已用金额</text>
-    <text class="nb-muted" wx:if="{{type==='credit'}}">信用卡填已用金额；额度在下方</text>
-    <amount-input value="{{balance}}" bind:change="onBal" />
+    <text class="label">{{type === 'credit' ? '初始余额 / 已用金额' : '初始余额'}}</text>
+    <text class="nb-muted" wx:if="{{type==='credit'}}">信用卡填已用额度；可用=固定额度+临时额度-已用</text>
+    <block wx:for="{{[formKey]}}" wx:key="*this" wx:for-item="_fk">
+      <amount-input value="{{balance}}" bind:change="onBal" />
+    </block>
   </view>
   <view class="field" wx:if="{{type==='credit'}}">
-    <text class="label">信用卡额度</text>
-    <amount-input value="{{creditLimit}}" bind:change="onLimit" />
+    <text class="label">固定额度</text>
+    <block wx:for="{{[formKey]}}" wx:key="*this" wx:for-item="_fk">
+      <amount-input value="{{creditLimit}}" bind:change="onLimit" />
+    </block>
+  </view>
+  <view class="field" wx:if="{{type==='credit'}}">
+    <text class="label">临时额度</text>
+    <block wx:for="{{[formKey]}}" wx:key="*this" wx:for-item="_fk">
+      <amount-input value="{{tempLimit}}" bind:change="onTempLimit" />
+    </block>
   </view>
   <view class="field">
     <text class="label">币种</text>
-    <picker range="{{currencies}}" value="{{ci}}" bindchange="onCur">
-      <view class="inp">{{currencies[ci]}}</view>
-    </picker>
+    <scroll-view scroll-x class="type-scroll" enable-flex="{{true}}" show-scrollbar="{{false}}">
+      <view class="type-group">
+        <view
+          wx:for="{{currencies}}"
+          wx:key="*this"
+          class="type-btn {{ci === index ? 'on' : ''}}"
+          data-index="{{index}}"
+          bindtap="onCurrencyTap"
+        >
+          {{item}}
+        </view>
+      </view>
+    </scroll-view>
   </view>
-  <button type="primary" class="btn" bindtap="save">创建</button>
+  <button type="primary" class="btn" bindtap="save">{{isEdit ? '保存' : '创建'}}</button>
   <button wx:if="{{onboarding}}" class="btn-skip" bindtap="skipOnboarding">稍后再说，进入首页</button>
 </view>

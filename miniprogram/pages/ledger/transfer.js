@@ -73,7 +73,7 @@ Page({
         type: 'transfer',
         amount: amt,
         category: '转账',
-        accountId: fromId,
+        fromAccountId: fromId,
         toAccountId: toId,
         date,
         note,

@@ -22,9 +22,12 @@ Page({
       return
     }
     this.loadI18n()
-    this.setData({ loading: true, loadError: false })
+    const firstPaint = !this.data.overview
+    if (firstPaint) {
+      this.setData({ loading: true, loadError: false })
+    }
     try {
-      await Promise.all([this.loadSettings(), this.loadOverview()])
+      await this.loadOverview({ keepCacheOnError: !firstPaint })
     } finally {
       this.setData({ loading: false })
     }
@@ -32,7 +35,7 @@ Page({
 
   onPullDownRefresh() {
     this.loadI18n()
-    Promise.all([this.loadSettings(), this.loadOverview()])
+    this.loadOverview({ keepCacheOnError: true })
       .catch(() => {})
       .finally(() => wx.stopPullDownRefresh())
   },
@@ -61,19 +64,17 @@ Page({
     })
   },
 
-  async loadSettings() {
+  async loadOverview(options = {}) {
+    const { keepCacheOnError = false } = options
+    const hadOverview = !!this.data.overview
     try {
-      const data = await callCloud('settings', { action: 'get' })
-      const hide = !!(data.settings && data.settings.hideAmount)
-      this.setData({ hideAmount: hide })
-    } catch (e) {
-      this.setData({ hideAmount: false })
-    }
-  },
-
-  async loadOverview() {
-    try {
-      const overview = await callCloud('report', { action: 'homeOverview' })
+      const raw = await callCloud('report', { action: 'homeOverview' })
+      const hideAmount = !!raw.hideAmount
+      const overview = {
+        today: raw.today,
+        budget: raw.budget,
+        assets: raw.assets,
+      }
       const total = Number(overview.budget.total) || 0
       const used = Number(overview.budget.used) || 0
       let pct = total > 0 ? Math.min(100, Math.round((used / total) * 100)) : 0
@@ -81,7 +82,7 @@ Page({
       if (pct >= 80) budgetBarClass = 'danger'
       else if (pct >= 50) budgetBarClass = 'warn'
       else if (pct > 0) budgetBarClass = 'ok'
-      const hide = this.data.hideAmount
+      const hide = hideAmount
       const fmt = (v) => (hide ? '****' : formatMoney(v))
       const app = getApp()
       const t = app.globalData.i18n.t.bind(app.globalData.i18n)
@@ -91,6 +92,7 @@ Page({
         Number(acc.total || 0) > 0 ||
         Object.values(byType).some((n) => Number(n) > 0)
       this.setData({
+        hideAmount,
         overview,
         loadError: false,
         noAccounts: !hasAnyAccount,
@@ -106,6 +108,11 @@ Page({
         },
       })
     } catch (e) {
+      if (keepCacheOnError && hadOverview) {
+        const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
+        wx.showToast({ title: e.message || t('common.loadFailed'), icon: 'none' })
+        return
+      }
       this.setData({ overview: null, loadError: true })
       const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
       wx.showToast({ title: e.message || t('common.loadFailed'), icon: 'none' })
@@ -127,7 +134,7 @@ Page({
   async retryLoad() {
     this.setData({ loading: true, loadError: false })
     try {
-      await Promise.all([this.loadSettings(), this.loadOverview()])
+      await this.loadOverview()
     } finally {
       this.setData({ loading: false })
     }
