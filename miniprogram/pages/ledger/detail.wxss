@@ -6,6 +6,31 @@
   padding: 24rpx;
 }
 
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  padding: 0 24rpx 16rpx;
+}
+
+.filter-chip {
+  display: inline-block;
+  max-width: 220rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: #fff;
+  padding: 12rpx 20rpx;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  color: #333;
+  border: 1px solid #e5e5e5;
+}
+
+.filter-chip.narrow {
+  max-width: 160rpx;
+}
+
 .date-btn {
   display: inline-block;
   background: #fff;

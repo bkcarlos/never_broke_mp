@@ -22,8 +22,22 @@ const ACCOUNT_TYPES = [
   { value: 'investment', label: '投资账户' },
 ]
 
+/** 常见银行（展示用，可选「其他」后手动输入） */
+const BANKS = [
+  '',
+  '工商银行',
+  '建设银行',
+  '农业银行',
+  '中国银行',
+  '招商银行',
+  '交通银行',
+  '邮储银行',
+  '其他',
+]
+
 module.exports = {
   EXPENSE_CATEGORIES,
   INCOME_CATEGORIES,
   ACCOUNT_TYPES,
+  BANKS,
 }

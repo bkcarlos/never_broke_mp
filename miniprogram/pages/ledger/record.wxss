@@ -2,6 +2,35 @@
   padding: 24rpx 24rpx 80rpx;
 }
 
+.quick-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+  gap: 16rpx;
+}
+
+.quick-label {
+  font-size: 24rpx;
+  color: #999;
+  flex-shrink: 0;
+}
+
+.quick-scroll {
+  flex: 1;
+  white-space: nowrap;
+}
+
+.quick-chip {
+  display: inline-block;
+  padding: 12rpx 24rpx;
+  margin-right: 16rpx;
+  background: #fff;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  color: #333;
+  border: 1px solid #e5e5e5;
+}
+
 .tabs {
   display: flex;
   margin-bottom: 32rpx;
@@ -22,6 +51,11 @@
   background: #1aad19;
   color: #fff;
   font-weight: 600;
+}
+
+.tab.disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .field {

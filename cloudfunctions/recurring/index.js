@@ -104,6 +104,15 @@ exports.main = async (event) => {
       })
     }
 
+    if (action === 'delete') {
+      const { id } = event
+      if (!id) return fail(400, '缺少 id')
+      const doc = await col.doc(id).get()
+      if (!doc.data || doc.data.openid !== openid) return fail(403, '无权操作')
+      await col.doc(id).remove()
+      return ok({ removed: true })
+    }
+
     if (action === 'projected') {
       const horizon = Number(event.days || 90)
       const today = new Date().toISOString().slice(0, 10)

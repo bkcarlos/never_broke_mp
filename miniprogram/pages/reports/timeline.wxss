@@ -22,3 +22,54 @@
   background: #1aad19;
   color: #fff;
 }
+
+.toolbar {
+  padding: 0 24rpx 16rpx;
+}
+
+.range-chip {
+  display: inline-block;
+  background: #fff;
+  padding: 12rpx 24rpx;
+  border-radius: 999rpx;
+  font-size: 26rpx;
+  border: 1px solid #e5e5e5;
+}
+
+.empty {
+  text-align: center;
+  padding: 48rpx;
+}
+
+.nb-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chev {
+  color: #999;
+  font-size: 24rpx;
+}
+
+.mt-btn {
+  margin-top: 16rpx;
+}
+
+.expand-tip {
+  margin-top: 12rpx;
+  font-size: 22rpx;
+}
+
+.sub-h {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.line {
+  display: block;
+  font-size: 26rpx;
+  margin-top: 6rpx;
+}

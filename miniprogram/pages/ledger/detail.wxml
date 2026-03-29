@@ -5,6 +5,18 @@
     </picker>
   </view>
 
+  <view class="filters">
+    <picker mode="selector" range="{{typeLabels}}" value="{{typeIndex}}" bindchange="onTypeFilter">
+      <view class="filter-chip">{{typeLabels[typeIndex]}}</view>
+    </picker>
+    <picker mode="selector" range="{{accountNames}}" value="{{accountIndex}}" bindchange="onAccountFilter">
+      <view class="filter-chip">{{accountNames[accountIndex]}}</view>
+    </picker>
+    <picker mode="selector" range="{{categoryLabels}}" value="{{categoryIndex}}" bindchange="onCategoryFilter">
+      <view class="filter-chip narrow">{{categoryLabels[categoryIndex]}}</view>
+    </picker>
+  </view>
+
   <view class="summary nb-muted" wx:if="{{summary}}">
     {{i18n.income}} {{summary.income}}　{{i18n.expense}} {{summary.expense}}
   </view>
@@ -18,7 +30,7 @@
         <text class="tx-amt {{item.type}}">{{item.type === 'expense' ? '-' : item.type === 'income' ? '+' : '↔'}}{{item.displayAmount}}</text>
       </view>
       <text class="tx-note nb-muted">{{item.note || i18n.noNote}}</text>
-      <text class="tx-time nb-muted">{{item.type}}</text>
+      <text class="tx-time nb-muted">{{item.type === 'income' ? i18n.income : item.type === 'expense' ? i18n.expense : '转账'}}</text>
     </view>
   </block>
 

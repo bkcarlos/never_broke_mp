@@ -10,6 +10,20 @@
   margin-bottom: 120rpx;
 }
 
+.logo {
+  width: 120rpx;
+  height: 120rpx;
+  margin: 0 auto 32rpx;
+  border-radius: 28rpx;
+  background: #1aad19;
+  color: #fff;
+  font-size: 40rpx;
+  font-weight: 700;
+  line-height: 120rpx;
+  text-align: center;
+  box-shadow: 0 8rpx 24rpx rgba(26, 173, 25, 0.35);
+}
+
 .name {
   display: block;
   font-size: 48rpx;
@@ -48,4 +62,9 @@
   flex: 1;
   margin-left: 8rpx;
   line-height: 1.5;
+}
+
+.link {
+  color: #1aad19;
+  text-decoration: underline;
 }

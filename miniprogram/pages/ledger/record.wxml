@@ -1,7 +1,20 @@
 <view class="page">
+  <view class="quick-row" wx:if="{{!isEdit}}">
+    <text class="quick-label">常用</text>
+    <scroll-view class="quick-scroll" scroll-x="true" show-scrollbar="{{false}}">
+      <view
+        class="quick-chip"
+        wx:for="{{quickTemplates}}"
+        wx:key="label"
+        data-i="{{index}}"
+        bindtap="applyQuick"
+      >{{item.label}}</view>
+    </scroll-view>
+  </view>
+
   <view class="tabs">
-    <view class="tab {{kind==='expense'?'on':''}}" data-k="expense" bindtap="setKind">支出</view>
-    <view class="tab {{kind==='income'?'on':''}}" data-k="income" bindtap="setKind">收入</view>
+    <view class="tab {{kind==='expense'?'on':''}} {{isEdit?'disabled':''}}" data-k="expense" bindtap="setKind">支出</view>
+    <view class="tab {{kind==='income'?'on':''}} {{isEdit?'disabled':''}}" data-k="income" bindtap="setKind">收入</view>
   </view>
 
   <view class="field">
@@ -36,5 +49,5 @@
     <input class="inp" type="number" placeholder="如 6" value="{{installments}}" bindinput="onInst" />
   </view>
 
-  <button class="save" type="primary" bindtap="save">保存</button>
+  <button class="save" type="primary" bindtap="save">{{isEdit ? '保存修改' : '保存'}}</button>
 </view>

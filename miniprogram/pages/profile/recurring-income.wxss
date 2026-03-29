@@ -42,3 +42,28 @@
   margin-top: 24rpx;
   background: #1aad19 !important;
 }
+
+.nb-card.due {
+  border: 1px solid #ffe58f;
+  background: #fffbe6;
+}
+
+.due-tag {
+  font-size: 22rpx;
+  color: #d48806;
+  background: #fff1b8;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.sub-line {
+  display: block;
+  font-size: 28rpx;
+  margin-bottom: 8rpx;
+}
+
+.row-btns {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}

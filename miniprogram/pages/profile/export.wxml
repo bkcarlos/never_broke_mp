@@ -1,5 +1,16 @@
 <view class="page">
   <view class="nb-card">
+    <text class="label">快捷范围</text>
+    <view class="preset-row">
+      <button
+        wx:for="{{presetLabels}}"
+        wx:key="*this"
+        size="mini"
+        class="preset-btn"
+        data-i="{{index}}"
+        bindtap="applyPreset"
+      >{{item}}</button>
+    </view>
     <text class="label">开始日期</text>
     <picker mode="date" value="{{startDate}}" bindchange="onStart">
       <view class="inp">{{startDate}}</view>

@@ -16,7 +16,8 @@
   </view>
 
   <view class="nb-card" wx:if="{{chartPoints.length}}">
-    <view class="nb-title">余额走势（简图）</view>
+    <view class="nb-title">余额走势</view>
+    <canvas type="2d" id="cfLineCanvas" class="cf-canvas"></canvas>
     <view class="spark">
       <block wx:for="{{chartPoints}}" wx:key="date">
         <view class="dot-col">

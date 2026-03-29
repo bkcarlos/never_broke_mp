@@ -66,4 +66,39 @@ Page({
       wx.showToast({ title: e.message || '加载失败', icon: 'none' })
     }
   },
+
+  onAccTap(e) {
+    const id = e.currentTarget.dataset.id
+    const name = e.currentTarget.dataset.name || '账户'
+    if (!id) return
+    wx.showActionSheet({
+      itemList: ['编辑', '归档（隐藏）'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          wx.navigateTo({ url: '/pages/profile/accounts-new?id=' + id })
+          return
+        }
+        if (res.tapIndex === 1) {
+          wx.showModal({
+            title: '归档账户',
+            content: `确定归档「${name}」吗？归档后列表不再显示，历史账单仍保留。`,
+            success: async (r) => {
+              if (!r.confirm) return
+              try {
+                await callCloud('account', {
+                  action: 'update',
+                  id,
+                  archived: true,
+                })
+                wx.showToast({ title: '已归档', icon: 'success' })
+                this.load()
+              } catch (err) {
+                wx.showToast({ title: err.message || '失败', icon: 'none' })
+              }
+            },
+          })
+        }
+      },
+    })
+  },
 })

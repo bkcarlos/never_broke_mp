@@ -3,6 +3,7 @@
   "private": true,
   "description": "NeverBroke 微信小程序（云开发）",
   "scripts": {
-    "check": "node scripts/check-structure.js"
+    "check": "node scripts/check-structure.js",
+    "deploy:cloud": "bash scripts/deploy-cloudfunctions.sh"
   }
 }

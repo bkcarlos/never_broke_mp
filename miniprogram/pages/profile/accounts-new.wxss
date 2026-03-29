@@ -2,6 +2,47 @@
   padding: 24rpx;
 }
 
+.onboard-tip {
+  background: #e8f5e9;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 32rpx;
+}
+
+.onboard-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1aad19;
+  margin-bottom: 12rpx;
+}
+
+.onboard-desc {
+  display: block;
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.5;
+}
+
+.btn-skip {
+  margin-top: 24rpx;
+  background: #fff !important;
+  color: #666 !important;
+  border: 1px solid #e5e5e5 !important;
+  border-radius: 16rpx !important;
+}
+
+.small-tip {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+
+.mt {
+  margin-top: 16rpx;
+}
+
 .field {
   margin-bottom: 28rpx;
 }

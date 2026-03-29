@@ -5,12 +5,35 @@
       <text class="label">月度总预算</text>
       <input class="inp" type="digit" placeholder="金额" value="{{totalBudget}}" bindinput="onBudget" />
     </view>
+    <button class="btn-secondary" size="mini" bindtap="copyPrev">从上月复制预算</button>
     <view wx:if="{{usage}}">
-      <text>已用 {{usage.used}} / {{usage.total}}</text>
+      <text class="usage-line">已用 {{usage.used}} / {{usage.total}}</text>
       <view class="bar-bg">
-        <view class="bar-fill" style="width: {{usage.pct}}%;"></view>
+        <view class="bar-fill {{barClass}}" style="width: {{usage.pct}}%;"></view>
+      </view>
+    </view>
+    <view class="field row-check">
+      <view class="chk-wrap" bindtap="toggleAlert80">
+        <checkbox checked="{{alert80}}" />
+        <text>达到 80% 时提醒</text>
+      </view>
+    </view>
+    <view class="field row-check">
+      <view class="chk-wrap" bindtap="toggleAlertOver">
+        <checkbox checked="{{alertOver}}" />
+        <text>超支时提醒</text>
       </view>
     </view>
     <button type="primary" class="btn" bindtap="save">保存</button>
+  </view>
+
+  <view class="nb-card" wx:if="{{history.length}}">
+    <view class="nb-title">历史预算执行</view>
+    <block wx:for="{{history}}" wx:key="yearMonth">
+      <view class="hist-row">
+        <text class="hist-ym">{{item.yearMonth}}</text>
+        <text class="hist-num {{item.over ? 'over' : ''}}">{{item.usedFmt}} / {{item.totalFmt}} ({{item.pct}}%)</text>
+      </view>
+    </block>
   </view>
 </view>

@@ -15,13 +15,22 @@ module.exports = {
     seeAccounts: '详见账户管理',
     recordBtn: '记一笔',
     transferBtn: '转账',
-    reportsBtn: '查看报表'
+    reportsBtn: '查看报表',
+    noAccountTip: '还没有账户，创建后即可记账',
+    createAccount: '去创建账户',
+    budgetNotSet: '尚未设置本月预算',
+    setBudget: '去设置',
+    loadError: '加载失败，下拉重试',
+    retry: '重试'
   },
   ledger: {
     income: '收入',
     expense: '支出',
     noRecord: '当日暂无记录',
-    noNote: '无备注'
+    noNote: '无备注',
+    filterType: '类型',
+    filterAccount: '账户',
+    filterCategory: '分类'
   },
   profile: {
     user: '用户',

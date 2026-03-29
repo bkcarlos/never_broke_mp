@@ -1,6 +1,6 @@
 <view class="page">
   <view class="nb-card">
-    <text class="nb-muted">支持 CSV（UTF-8），表头含 date/日期, type/类型, amount/金额, category/分类, note/备注</text>
+    <text class="nb-muted">支持 CSV（UTF-8），表头含 date/日期, type/类型, amount/金额, category/分类, note/备注。导入仅写入流水，不会自动调整账户余额，导入后请在账户管理中核对余额。</text>
     <button bindtap="pickFile">选择文件</button>
     <text wx:if="{{fileName}}" class="nb-muted">已选：{{fileName}}</text>
   </view>

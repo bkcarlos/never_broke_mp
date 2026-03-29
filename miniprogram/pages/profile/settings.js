@@ -65,15 +65,20 @@ Page({
       notifyRecurring,
     } = this.data
     try {
+      const language = li === 1 ? 'en-US' : 'zh-CN'
       await callCloud('settings', {
         action: 'update',
-        language: li === 1 ? 'en-US' : 'zh-CN',
+        language,
         hideAmount,
         safetyLine: Number(safetyLine) || 0,
         notifyBudget,
         notifyInstallment,
         notifyRecurring,
       })
+      const app = getApp()
+      if (app && app.globalData && app.globalData.i18n) {
+        app.globalData.i18n.setLanguage(language)
+      }
       wx.showToast({ title: '已保存', icon: 'success' })
     } catch (e) {
       wx.showToast({ title: e.message || '失败', icon: 'none' })

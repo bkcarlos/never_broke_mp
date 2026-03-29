@@ -1,5 +1,6 @@
 {
   "navigationBarTitleText": "记一笔",
+  "navigationStyle": "default",
   "usingComponents": {
     "amount-input": "/components/amount-input/amount-input",
     "account-picker": "/components/account-picker/account-picker",

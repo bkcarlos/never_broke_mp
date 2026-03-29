@@ -1,4 +1,18 @@
 <view class="page">
+  <view class="home-loading" wx:if="{{loading && !overview}}">
+    <text class="nb-muted">加载中…</text>
+  </view>
+
+  <view class="nb-card home-error" wx:if="{{loadError && !overview}}">
+    <text class="nb-muted">{{i18n.loadError}}</text>
+    <button class="retry-btn" size="mini" bindtap="retryLoad">{{i18n.retry}}</button>
+  </view>
+
+  <view class="nb-card hint-card" wx:if="{{overview && noAccounts}}">
+    <text class="hint-text">{{i18n.noAccountTip}}</text>
+    <button class="hint-btn" size="mini" type="primary" bindtap="goCreateAccount">{{i18n.createAccount}}</button>
+  </view>
+
   <view class="nb-card" wx:if="{{overview}}">
     <view class="nb-title">{{i18n.todayExpense}}</view>
     <view class="big">{{display.todayExpense}}</view>
@@ -7,21 +21,27 @@
 
   <view class="nb-card" wx:if="{{overview}}">
     <view class="nb-title">{{i18n.monthBudget}}</view>
-    <view class="row">
-      <text>{{display.budgetLine}}</text>
+    <view wx:if="{{budgetNotSet}}" class="budget-empty">
+      <text class="nb-muted">{{i18n.budgetNotSet}}</text>
+      <button class="hint-btn" size="mini" type="primary" bindtap="goBudget">{{i18n.setBudget}}</button>
     </view>
-    <view class="bar-bg">
-      <view class="bar-fill {{budgetBarClass}}" style="width: {{budgetPercent}}%;"></view>
-    </view>
-    <text class="nb-muted">{{display.budgetRemain}}</text>
+    <block wx:else>
+      <view class="row">
+        <text>{{display.budgetLine}}</text>
+      </view>
+      <view class="bar-bg">
+        <view class="bar-fill {{budgetBarClass}}" style="width: {{budgetPercent}}%;"></view>
+      </view>
+      <text class="nb-muted">{{display.budgetRemain}}</text>
+    </block>
   </view>
 
-  <view class="nb-card" wx:if="{{overview}}">
+  <view class="nb-card asset-card" wx:if="{{overview}}" bindtap="goAccounts">
     <view class="nb-title">{{i18n.assetsOverview}}</view>
     <view class="big">{{display.assetsTotal}}</view>
     <view class="split">
       <text>{{i18n.multiAccount}}</text>
-      <text class="nb-muted">{{i18n.seeAccounts}}</text>
+      <text class="linkish">{{i18n.seeAccounts}}</text>
     </view>
   </view>
 

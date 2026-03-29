@@ -29,6 +29,14 @@ exports.main = async (event) => {
       return ok({ list: r.data })
     }
 
+    if (action === 'get') {
+      const { id } = event
+      if (!id) return fail(400, '缺少 id')
+      const doc = await col.doc(id).get()
+      if (!doc.data || doc.data.openid !== openid) return fail(404, '账户不存在')
+      return ok({ account: doc.data })
+    }
+
     if (action === 'create') {
       const {
         name,

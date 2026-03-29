@@ -1,13 +1,17 @@
 <view class="page">
   <view class="section">进行中的周期收入</view>
   <block wx:for="{{list}}" wx:key="_id">
-    <view class="nb-card">
+    <view class="nb-card {{item.isDue ? 'due' : ''}}">
       <view class="row">
         <text class="t">{{item.name}}</text>
-        <text>{{item.displayAmount}} / {{item.frequency}}</text>
+        <text class="due-tag" wx:if="{{item.isDue}}">已到期</text>
       </view>
+      <text class="sub-line">{{item.displayAmount}} · {{item.frequency}}</text>
       <text class="nb-muted">下次到期 {{item.nextDueDate}}</text>
-      <button size="mini" bindtap="realize" data-id="{{item._id}}">实现收入</button>
+      <view class="row-btns">
+        <button size="mini" type="primary" bindtap="realize" data-id="{{item._id}}">实现收入</button>
+        <button size="mini" bindtap="removeItem" data-id="{{item._id}}" data-name="{{item.name}}">删除</button>
+      </view>
     </view>
   </block>
 

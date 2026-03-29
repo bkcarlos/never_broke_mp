@@ -9,7 +9,7 @@
   <block wx:for="{{groups}}" wx:key="type">
     <view class="group-title">{{item.label}}</view>
     <block wx:for="{{item.list}}" wx:for-item="acc" wx:key="_id">
-      <view class="acc-card">
+      <view class="acc-card" bindtap="onAccTap" data-id="{{acc._id}}" data-name="{{acc.name}}">
         <view class="row">
           <text class="name">{{acc.name}}</text>
           <text class="bal">{{acc.displayBalance}}</text>

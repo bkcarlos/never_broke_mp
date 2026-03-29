@@ -36,9 +36,11 @@ Page({
   async loadList() {
     try {
       const data = await callCloud('recurring', { action: 'list' })
+      const today = new Date().toISOString().slice(0, 10)
       const list = (data.list || []).map((x) => ({
         ...x,
         displayAmount: formatMoney(x.amount),
+        isDue: x.nextDueDate <= today,
       }))
       this.setData({ list })
     } catch (e) {
@@ -101,8 +103,8 @@ Page({
           amount: inc.amount,
           category: '工资',
           accountId: inc.accountId,
-          date: new Date().toISOString().slice(0, 10),
-          note: inc.note || '周期收入',
+          date: formatDate(new Date()),
+          note: (inc.note || '周期收入') + '（周期）',
         })
       }
       wx.showToast({ title: '已入账', icon: 'success' })
@@ -110,5 +112,24 @@ Page({
     } catch (err) {
       wx.showToast({ title: err.message || '失败', icon: 'none' })
     }
+  },
+
+  async removeItem(e) {
+    const id = e.currentTarget.dataset.id
+    const name = e.currentTarget.dataset.name || ''
+    wx.showModal({
+      title: '删除周期收入',
+      content: `确定删除「${name}」吗？`,
+      success: async (r) => {
+        if (!r.confirm) return
+        try {
+          await callCloud('recurring', { action: 'delete', id })
+          wx.showToast({ title: '已删除', icon: 'success' })
+          this.loadList()
+        } catch (err) {
+          wx.showToast({ title: err.message || '失败', icon: 'none' })
+        }
+      },
+    })
   },
 })

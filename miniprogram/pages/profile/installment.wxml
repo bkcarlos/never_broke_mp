@@ -5,20 +5,36 @@
     <picker range="{{instOpts}}" value="{{instIdx}}" bindchange="onInstPick">
       <view class="inp mt">{{instOpts[instIdx]}} 期</view>
     </picker>
-    <button size="mini" bindtap="doPreview">预览</button>
+    <button class="btn-prev" size="mini" type="primary" bindtap="doPreview">预览计划</button>
     <view wx:if="{{preview}}" class="preview-result nb-muted">
       <text>每期约 {{preview.perAmount}}，首期 {{preview.firstDate}}，末期 {{preview.lastDate}}</text>
     </view>
   </view>
 
   <view class="section">进行中的分期</view>
-  <block wx:for="{{plans}}" wx:key="_id">
-    <view class="nb-card">
+  <view wx:if="{{!activePlans.length}}" class="empty nb-muted">暂无进行中的分期</view>
+  <block wx:for="{{activePlans}}" wx:key="_id">
+    <view class="nb-card plan-card">
       <view class="row">
         <text class="title">{{item.title}}</text>
-        <text>已还 {{item.paidInstallments}}/{{item.installments}}</text>
+        <text class="badge">已还 {{item.paidInstallments}}/{{item.installments}}</text>
       </view>
-      <view class="nb-muted">总额 {{item.totalAmount}}</view>
+      <view class="nb-muted">总额 {{item.totalAmountFmt}}</view>
+      <view class="plan-actions">
+        <button size="mini" bindtap="showPlanDetail" data-id="{{item._id}}">查看明细</button>
+        <button size="mini" type="primary" bindtap="payNext" data-id="{{item._id}}">标记下期已还</button>
+      </view>
+    </view>
+  </block>
+
+  <view class="section" wx:if="{{donePlans.length}}">已完成</view>
+  <block wx:for="{{donePlans}}" wx:key="_id">
+    <view class="nb-card done" bindtap="showPlanDetail" data-id="{{item._id}}">
+      <view class="row">
+        <text class="title muted">{{item.title}}</text>
+        <text class="nb-muted">已完成</text>
+      </view>
+      <view class="nb-muted">总额 {{item.totalAmountFmt}}</view>
     </view>
   </block>
 </view>

@@ -35,3 +35,38 @@
 .title {
   font-weight: 600;
 }
+
+.btn-prev {
+  margin-top: 16rpx;
+  background: #1aad19 !important;
+  color: #fff !important;
+}
+
+.badge {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.plan-actions {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+
+.plan-card {
+  margin-bottom: 16rpx;
+}
+
+.empty {
+  padding: 24rpx;
+  text-align: center;
+  font-size: 26rpx;
+}
+
+.done {
+  opacity: 0.85;
+}
+
+.done .title.muted {
+  color: #999;
+}

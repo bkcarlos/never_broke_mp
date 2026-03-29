@@ -35,3 +35,14 @@ page {
   align-items: center;
   justify-content: space-between;
 }
+
+button[type='primary'] {
+  font-weight: 500;
+}
+
+.page-hint {
+  font-size: 24rpx;
+  color: #999;
+  padding: 0 24rpx 16rpx;
+  line-height: 1.5;
+}

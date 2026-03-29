@@ -30,7 +30,8 @@ npm run check
 
 ## 说明
 
-- 图表：报表与现金流使用轻量条形/点阵示意，如需 ECharts 可集成 [echarts-for-weixin](https://github.com/ecomfe/echarts-for-weixin)。
+- 图表：报表与现金流使用 **Canvas 2D 自绘**（见 `miniprogram/utils/chart-draw.js`）；可选接入 ECharts 见 [docs/ECHARTS.md](./docs/ECHARTS.md)。
+- 测试与上线：[docs/TESTING.md](./docs/TESTING.md)、[docs/LAUNCH.md](./docs/LAUNCH.md)。
 - 薪资与个税为**演示算法**，请以实际扣缴为准。
 - 导入 CSV 请使用 **UTF-8** 编码。
 

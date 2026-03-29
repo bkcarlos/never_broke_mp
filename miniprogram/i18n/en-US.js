@@ -15,13 +15,22 @@ module.exports = {
     seeAccounts: 'See Account Management',
     recordBtn: 'Record',
     transferBtn: 'Transfer',
-    reportsBtn: 'View Reports'
+    reportsBtn: 'View Reports',
+    noAccountTip: 'No account yet. Create one to start.',
+    createAccount: 'Create account',
+    budgetNotSet: 'Monthly budget not set',
+    setBudget: 'Set budget',
+    loadError: 'Load failed. Pull to refresh',
+    retry: 'Retry'
   },
   ledger: {
     income: 'Income',
     expense: 'Expense',
     noRecord: 'No records today',
-    noNote: 'No note'
+    noNote: 'No note',
+    filterType: 'Type',
+    filterAccount: 'Account',
+    filterCategory: 'Category'
   },
   profile: {
     user: 'User',

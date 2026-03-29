@@ -5,23 +5,44 @@
   </view>
 
   <block wx:if="{{mode==='past'}}">
+    <view class="toolbar">
+      <picker mode="selector" range="{{pastRangeLabels}}" value="{{pastRangeIndex}}" bindchange="onPastRange">
+        <view class="range-chip">{{pastRangeLabels[pastRangeIndex]}}</view>
+      </picker>
+    </view>
+    <view wx:if="{{!pastList.length}}" class="empty nb-muted">该范围内暂无汇总</view>
     <block wx:for="{{pastList}}" wx:key="date">
       <view class="nb-card">
-        <view class="nb-title">{{item.date}}</view>
+        <view class="nb-row" bindtap="toggleExpand" data-date="{{item.date}}">
+          <view class="nb-title">{{item.date}}</view>
+          <text class="chev">{{expandedDate === item.date ? '▼' : '▶'}}</text>
+        </view>
         <text class="nb-muted">收入 {{item.income}}　支出 {{item.expense}}　{{item.count}} 笔</text>
-        <button size="mini" bindtap="showDetail" data-date="{{item.date}}">查看明细</button>
+        <button size="mini" class="mt-btn" bindtap="showDetail" data-date="{{item.date}}">查看当日明细</button>
+        <view wx:if="{{expandedDate === item.date}}" class="expand-tip nb-muted">提示：点击「查看当日明细」可展开完整流水</view>
       </view>
     </block>
   </block>
 
   <block wx:if="{{mode==='future'}}">
-    <view class="nb-card" wx:if="{{projected.length===0}}">
-      <text class="nb-muted">暂无周期收入/分期计划投射</text>
+    <view class="nb-card" wx:if="{{!futureList.length}}">
+      <text class="nb-muted">暂无未来 120 天内的周期收入或未还分期</text>
     </view>
-    <block wx:for="{{projected}}" wx:key="index">
+    <block wx:for="{{futureList}}" wx:key="date">
       <view class="nb-card">
         <view class="nb-title">{{item.date}}</view>
-        <text>预计收入 {{item.name}} {{item.amount}}</text>
+        <view wx:if="{{item.inflows.length}}">
+          <text class="sub-h">预计收入</text>
+          <block wx:for="{{item.inflows}}" wx:for-item="inc" wx:for-index="ii" wx:key="ii">
+            <text class="line">· {{inc.name}} {{inc.amount}}</text>
+          </block>
+        </view>
+        <view wx:if="{{item.outflows.length}}">
+          <text class="sub-h">预计支出</text>
+          <block wx:for="{{item.outflows}}" wx:for-item="out" wx:for-index="oi" wx:key="oi">
+            <text class="line">· {{out.name}} {{out.amount}}</text>
+          </block>
+        </view>
       </view>
     </block>
   </block>

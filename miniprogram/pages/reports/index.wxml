@@ -12,6 +12,9 @@
 
   <view class="nb-card" wx:if="{{categories.length}}">
     <view class="nb-title">支出分类占比</view>
+    <view class="chart-wrap" wx:if="{{showCharts}}">
+      <canvas type="2d" id="pieCanvas" class="chart-pie"></canvas>
+    </view>
     <block wx:for="{{categories}}" wx:key="name">
       <view class="cat-row">
         <text>{{item.name}}</text>
@@ -25,6 +28,9 @@
 
   <view class="nb-card" wx:if="{{trend.length}}">
     <view class="nb-title">近6月支出趋势</view>
+    <view class="chart-wrap line-wrap" wx:if="{{showCharts}}">
+      <canvas type="2d" id="lineCanvas" class="chart-line"></canvas>
+    </view>
     <block wx:for="{{trend}}" wx:key="yearMonth">
       <view class="trend-row">
         <text>{{item.yearMonth}}</text>

@@ -7,6 +7,7 @@ Page({
     startDate: '',
     endDate: '',
     url: '',
+    presetLabels: ['本月', '近3个月', '近6个月', '本年'],
   },
 
   onShow() {
@@ -16,6 +17,29 @@ Page({
     d.setMonth(d.getMonth() - 1)
     const start = formatDate(d)
     this.setData({ startDate: start, endDate: end, url: '' })
+  },
+
+  applyPreset(e) {
+    const i = Number(e.currentTarget.dataset.i)
+    const end = formatDate(new Date())
+    const now = new Date()
+    let s
+    if (i === 0) {
+      s = new Date(now.getFullYear(), now.getMonth(), 1)
+    } else if (i === 1) {
+      s = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate())
+    } else if (i === 2) {
+      s = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate())
+    } else if (i === 3) {
+      s = new Date(now.getFullYear(), 0, 1)
+    } else {
+      s = now
+    }
+    this.setData({
+      startDate: formatDate(s),
+      endDate: end,
+      url: '',
+    })
   },
 
   onStart(e) {

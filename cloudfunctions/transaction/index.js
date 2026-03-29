@@ -45,6 +45,14 @@ exports.main = async (event) => {
   const now = db.serverDate()
 
   try {
+    if (action === 'get') {
+      const { id } = event
+      if (!id) return fail(400, '缺少 id')
+      const doc = await txCol.doc(id).get()
+      if (!doc.data || doc.data.openid !== openid) return fail(404, '记录不存在')
+      return ok({ transaction: doc.data })
+    }
+
     if (action === 'daily') {
       const date = event.date
       if (!date) return fail(400, '缺少 date')

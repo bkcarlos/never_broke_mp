@@ -1,9 +1,13 @@
 <view class="page">
+  <view class="onboard-tip" wx:if="{{onboarding}}">
+    <text class="onboard-title">欢迎使用</text>
+    <text class="onboard-desc">创建至少一个账户后，即可在「记一笔」里选择账户并记账。</text>
+  </view>
   <view class="field">
     <text class="label">账户类型</text>
     <radio-group bindchange="onType">
       <label wx:for="{{types}}" wx:key="value" class="radio-line">
-        <radio value="{{item.value}}" checked="{{type === item.value}}" /> {{item.label}}
+        <radio value="{{item.value}}" checked="{{type === item.value}}" disabled="{{isEdit}}" /> {{item.label}}
       </label>
     </radio-group>
   </view>
@@ -12,8 +16,12 @@
     <input class="inp" placeholder="如 工资卡" value="{{name}}" bindinput="onName" />
   </view>
   <view class="field">
-    <text class="label">银行（选填）</text>
-    <input class="inp" placeholder="选填" value="{{bank}}" bindinput="onBank" />
+    <text class="label">银行</text>
+    <picker range="{{banks}}" value="{{bankIndex}}" bindchange="onBankPick">
+      <view class="inp">{{banks[bankIndex] || '请选择'}}</view>
+    </picker>
+    <text class="nb-muted small-tip" wx:if="{{bankIndex === banks.length - 1}}">选择「其他」时可在下方填写</text>
+    <input wx:if="{{bankIndex === banks.length - 1}}" class="inp mt" placeholder="银行名称" value="{{bank}}" bindinput="onBankInput" />
   </view>
   <view class="field">
     <text class="label">初始余额 / 已用金额</text>
@@ -31,4 +39,5 @@
     </picker>
   </view>
   <button type="primary" class="btn" bindtap="save">创建</button>
+  <button wx:if="{{onboarding}}" class="btn-skip" bindtap="skipOnboarding">稍后再说，进入首页</button>
 </view>
