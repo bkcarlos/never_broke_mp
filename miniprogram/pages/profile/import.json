@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "导入账单",
+  "usingComponents": {
+    "account-picker": "/components/account-picker/account-picker"
+  }
+}

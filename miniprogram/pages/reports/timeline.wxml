@@ -1,0 +1,28 @@
+<view class="page">
+  <view class="tabs">
+    <view class="tab {{mode==='past'?'on':''}}" data-m="past" bindtap="setMode">历史</view>
+    <view class="tab {{mode==='future'?'on':''}}" data-m="future" bindtap="setMode">未来</view>
+  </view>
+
+  <block wx:if="{{mode==='past'}}">
+    <block wx:for="{{pastList}}" wx:key="date">
+      <view class="nb-card">
+        <view class="nb-title">{{item.date}}</view>
+        <text class="nb-muted">收入 {{item.income}}　支出 {{item.expense}}　{{item.count}} 笔</text>
+        <button size="mini" bindtap="showDetail" data-date="{{item.date}}">查看明细</button>
+      </view>
+    </block>
+  </block>
+
+  <block wx:if="{{mode==='future'}}">
+    <view class="nb-card" wx:if="{{projected.length===0}}">
+      <text class="nb-muted">暂无周期收入/分期计划投射</text>
+    </view>
+    <block wx:for="{{projected}}" wx:key="index">
+      <view class="nb-card">
+        <view class="nb-title">{{item.date}}</view>
+        <text>预计收入 {{item.name}} {{item.amount}}</text>
+      </view>
+    </block>
+  </block>
+</view>

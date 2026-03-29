@@ -1,0 +1,27 @@
+<view class="page">
+  <view class="section">进行中的周期收入</view>
+  <block wx:for="{{list}}" wx:key="_id">
+    <view class="nb-card">
+      <view class="row">
+        <text class="t">{{item.name}}</text>
+        <text>{{item.displayAmount}} / {{item.frequency}}</text>
+      </view>
+      <text class="nb-muted">下次到期 {{item.nextDueDate}}</text>
+      <button size="mini" bindtap="realize" data-id="{{item._id}}">实现收入</button>
+    </view>
+  </block>
+
+  <view class="section">新建</view>
+  <view class="nb-card">
+    <input class="inp" placeholder="名称" value="{{name}}" bindinput="onName" />
+    <amount-input value="{{amount}}" bind:change="onAmt" />
+    <radio-group class="freq" bindchange="onFreq">
+      <label class="freq-item"><radio value="weekly" checked="{{frequency === 'weekly'}}" />每周</label>
+      <label class="freq-item"><radio value="monthly" checked="{{frequency === 'monthly'}}" />每月</label>
+      <label class="freq-item"><radio value="yearly" checked="{{frequency === 'yearly'}}" />每年</label>
+    </radio-group>
+    <date-picker value="{{startDate}}" bind:change="onStart" />
+    <account-picker accounts="{{accounts}}" value="{{accountId}}" bind:change="onAcc" />
+    <button type="primary" class="btn" bindtap="create">保存</button>
+  </view>
+</view>

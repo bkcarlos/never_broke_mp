@@ -1,0 +1,63 @@
+.page {
+  padding-bottom: 48rpx;
+}
+
+.big {
+  font-size: 48rpx;
+  font-weight: 600;
+  color: #333;
+  margin: 16rpx 0;
+}
+
+.row {
+  font-size: 30rpx;
+  margin-bottom: 16rpx;
+}
+
+.bar-bg {
+  height: 16rpx;
+  background: #eee;
+  border-radius: 8rpx;
+  overflow: hidden;
+  margin: 16rpx 0;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 8rpx;
+  background: #52c41a;
+}
+
+.bar-fill.warn {
+  background: #faad14;
+}
+
+.bar-fill.danger {
+  background: #ff6b6b;
+}
+
+.split {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16rpx;
+  font-size: 26rpx;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24rpx;
+  padding: 0 24rpx;
+  margin-top: 24rpx;
+}
+
+.mini {
+  flex: 1;
+  min-width: 200rpx;
+  font-size: 26rpx;
+}
+
+.mini.primary {
+  background: #1aad19;
+  color: #fff;
+}

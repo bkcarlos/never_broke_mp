@@ -1,0 +1,16 @@
+<view class="page">
+  <view class="nb-card">
+    <text class="nb-muted">支持 CSV（UTF-8），表头含 date/日期, type/类型, amount/金额, category/分类, note/备注</text>
+    <button bindtap="pickFile">选择文件</button>
+    <text wx:if="{{fileName}}" class="nb-muted">已选：{{fileName}}</text>
+  </view>
+  <view class="field">
+    <text class="label">默认入账账户</text>
+    <account-picker accounts="{{accounts}}" value="{{accountId}}" bind:change="onAcc" />
+  </view>
+  <button type="primary" bindtap="preview" disabled="{{!csvText}}">预览</button>
+  <view wx:if="{{previewCount}}" class="nb-card">
+    <text>共 {{previewCount}} 条（预览前 50 行）</text>
+    <button type="primary" bindtap="doImport">开始导入</button>
+  </view>
+</view>

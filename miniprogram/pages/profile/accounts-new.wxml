@@ -1,0 +1,34 @@
+<view class="page">
+  <view class="field">
+    <text class="label">账户类型</text>
+    <radio-group bindchange="onType">
+      <label wx:for="{{types}}" wx:key="value" class="radio-line">
+        <radio value="{{item.value}}" checked="{{type === item.value}}" /> {{item.label}}
+      </label>
+    </radio-group>
+  </view>
+  <view class="field">
+    <text class="label">账户名称</text>
+    <input class="inp" placeholder="如 工资卡" value="{{name}}" bindinput="onName" />
+  </view>
+  <view class="field">
+    <text class="label">银行（选填）</text>
+    <input class="inp" placeholder="选填" value="{{bank}}" bindinput="onBank" />
+  </view>
+  <view class="field">
+    <text class="label">初始余额 / 已用金额</text>
+    <text class="nb-muted" wx:if="{{type==='credit'}}">信用卡填已用金额；额度在下方</text>
+    <amount-input value="{{balance}}" bind:change="onBal" />
+  </view>
+  <view class="field" wx:if="{{type==='credit'}}">
+    <text class="label">信用卡额度</text>
+    <amount-input value="{{creditLimit}}" bind:change="onLimit" />
+  </view>
+  <view class="field">
+    <text class="label">币种</text>
+    <picker range="{{currencies}}" value="{{ci}}" bindchange="onCur">
+      <view class="inp">{{currencies[ci]}}</view>
+    </picker>
+  </view>
+  <button type="primary" class="btn" bindtap="save">创建</button>
+</view>

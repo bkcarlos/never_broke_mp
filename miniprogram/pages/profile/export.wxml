@@ -1,0 +1,16 @@
+<view class="page">
+  <view class="nb-card">
+    <text class="label">开始日期</text>
+    <picker mode="date" value="{{startDate}}" bindchange="onStart">
+      <view class="inp">{{startDate}}</view>
+    </picker>
+    <text class="label">结束日期</text>
+    <picker mode="date" value="{{endDate}}" bindchange="onEnd">
+      <view class="inp">{{endDate}}</view>
+    </picker>
+    <button type="primary" bindtap="generate">生成 CSV 并获取下载链接</button>
+    <text wx:if="{{url}}" class="nb-muted break">{{url}}</text>
+    <button wx:if="{{url}}" size="mini" bindtap="copy">复制链接</button>
+    <button wx:if="{{url}}" size="mini" bindtap="open">尝试打开</button>
+  </view>
+</view>

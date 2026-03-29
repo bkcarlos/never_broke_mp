@@ -1,0 +1,11 @@
+<view class="nb-amount">
+  <text class="nb-amount__prefix">¥</text>
+  <input
+    class="nb-amount__input"
+    type="digit"
+    placeholder="{{placeholder}}"
+    value="{{value}}"
+    disabled="{{disabled}}"
+    bindinput="onInput"
+  />
+</view>

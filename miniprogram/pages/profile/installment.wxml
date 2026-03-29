@@ -1,0 +1,24 @@
+<view class="page">
+  <view class="nb-card">
+    <view class="nb-title">分期预览</view>
+    <amount-input value="{{previewTotal}}" bind:change="onPrevTotal" />
+    <picker range="{{instOpts}}" value="{{instIdx}}" bindchange="onInstPick">
+      <view class="inp mt">{{instOpts[instIdx]}} 期</view>
+    </picker>
+    <button size="mini" bindtap="doPreview">预览</button>
+    <view wx:if="{{preview}}" class="preview-result nb-muted">
+      <text>每期约 {{preview.perAmount}}，首期 {{preview.firstDate}}，末期 {{preview.lastDate}}</text>
+    </view>
+  </view>
+
+  <view class="section">进行中的分期</view>
+  <block wx:for="{{plans}}" wx:key="_id">
+    <view class="nb-card">
+      <view class="row">
+        <text class="title">{{item.title}}</text>
+        <text>已还 {{item.paidInstallments}}/{{item.installments}}</text>
+      </view>
+      <view class="nb-muted">总额 {{item.totalAmount}}</view>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,19 @@
+.nb-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #e5e5e5;
+  border-radius: 8rpx;
+  padding: 20rpx 24rpx;
+  background: #fff;
+}
+
+.nb-picker__text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.nb-picker__arrow {
+  font-size: 22rpx;
+  color: #999;
+}

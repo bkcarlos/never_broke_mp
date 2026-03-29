@@ -1,0 +1,8 @@
+{
+  "name": "never-broke-ma",
+  "private": true,
+  "description": "NeverBroke 微信小程序（云开发）",
+  "scripts": {
+    "check": "node scripts/check-structure.js"
+  }
+}

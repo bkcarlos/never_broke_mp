@@ -1,0 +1,26 @@
+<view class="page">
+  <view class="toolbar">
+    <picker mode="date" value="{{date}}" bindchange="onDateChange">
+      <view class="date-btn">{{date}} 📅</view>
+    </picker>
+  </view>
+
+  <view class="summary nb-muted" wx:if="{{summary}}">
+    收入 {{summary.income}}　支出 {{summary.expense}}
+  </view>
+
+  <view wx:if="{{list.length === 0}}" class="empty">当日暂无记录</view>
+
+  <block wx:for="{{list}}" wx:key="_id">
+    <view class="tx-card" bindtap="onTapTx" data-id="{{item._id}}">
+      <view class="tx-row">
+        <text class="tx-cat">{{item.category}}</text>
+        <text class="tx-amt {{item.type}}">{{item.type === 'expense' ? '-' : item.type === 'income' ? '+' : '↔'}}{{item.displayAmount}}</text>
+      </view>
+      <text class="tx-note nb-muted">{{item.note || '无备注'}}</text>
+      <text class="tx-time nb-muted">{{item.type}}</text>
+    </view>
+  </block>
+
+  <view class="fab" bindtap="goRecord">+</view>
+</view>

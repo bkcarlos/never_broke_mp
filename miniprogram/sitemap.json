@@ -1,0 +1,9 @@
+{
+  "desc": "NeverBroke sitemap",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+.nb-amount {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e5e5e5;
+  border-radius: 8rpx;
+  padding: 16rpx 24rpx;
+  background: #fff;
+}
+
+.nb-amount__prefix {
+  font-size: 36rpx;
+  font-weight: 600;
+  margin-right: 8rpx;
+  color: #333;
+}
+
+.nb-amount__input {
+  flex: 1;
+  font-size: 36rpx;
+  min-height: 48rpx;
+}

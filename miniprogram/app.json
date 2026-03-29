@@ -1,0 +1,64 @@
+{
+  "pages": [
+    "pages/login/index",
+    "pages/index/index",
+    "pages/ledger/detail",
+    "pages/reports/index",
+    "pages/profile/index",
+    "pages/ledger/record",
+    "pages/ledger/transfer",
+    "pages/ledger/actions",
+    "pages/reports/cashflow",
+    "pages/reports/timeline",
+    "pages/profile/accounts",
+    "pages/profile/accounts-new",
+    "pages/profile/budget",
+    "pages/profile/installment",
+    "pages/profile/recurring-income",
+    "pages/profile/salary",
+    "pages/profile/import",
+    "pages/profile/export",
+    "pages/profile/settings"
+  ],
+  "window": {
+    "navigationBarTitleText": "NeverBroke",
+    "navigationBarBackgroundColor": "#1AAD19",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F5F5F5"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#1AAD19",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tab/home.png",
+        "selectedIconPath": "images/tab/home-active.png"
+      },
+      {
+        "pagePath": "pages/ledger/detail",
+        "text": "账本",
+        "iconPath": "images/tab/ledger.png",
+        "selectedIconPath": "images/tab/ledger-active.png"
+      },
+      {
+        "pagePath": "pages/reports/index",
+        "text": "报表",
+        "iconPath": "images/tab/report.png",
+        "selectedIconPath": "images/tab/report-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "images/tab/profile.png",
+        "selectedIconPath": "images/tab/profile-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

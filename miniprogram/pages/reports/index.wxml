@@ -1,0 +1,43 @@
+<view class="page">
+  <picker mode="date" fields="month" value="{{monthPicker}}" bindchange="onMonth">
+    <view class="month-bar">{{yearMonth}}</view>
+  </picker>
+
+  <view class="nb-card" wx:if="{{summary}}">
+    <view class="nb-title">月度汇总</view>
+    <view class="row"><text>收入</text><text class="green">{{summary.income}}</text></view>
+    <view class="row"><text>支出</text><text class="red">{{summary.expense}}</text></view>
+    <view class="row"><text>结余</text><text>{{summary.balance}}</text></view>
+  </view>
+
+  <view class="nb-card" wx:if="{{categories.length}}">
+    <view class="nb-title">支出分类占比</view>
+    <block wx:for="{{categories}}" wx:key="name">
+      <view class="cat-row">
+        <text>{{item.name}}</text>
+        <text>{{item.amount}} ({{item.ratio}}%)</text>
+      </view>
+      <view class="bar-bg">
+        <view class="bar-fill" style="width: {{item.ratio}}%;"></view>
+      </view>
+    </block>
+  </view>
+
+  <view class="nb-card" wx:if="{{trend.length}}">
+    <view class="nb-title">近6月支出趋势</view>
+    <block wx:for="{{trend}}" wx:key="yearMonth">
+      <view class="trend-row">
+        <text>{{item.yearMonth}}</text>
+        <view class="trend-bar-wrap">
+          <view class="trend-bar" style="width: {{item.barPct}}%;"></view>
+        </view>
+        <text class="trend-val">{{item.expense}}</text>
+      </view>
+    </block>
+  </view>
+
+  <view class="links">
+    <navigator url="/pages/reports/cashflow" class="link">现金流预测</navigator>
+    <navigator url="/pages/reports/timeline" class="link">时间线</navigator>
+  </view>
+</view>

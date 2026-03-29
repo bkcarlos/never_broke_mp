@@ -1,0 +1,77 @@
+.page {
+  padding-bottom: 48rpx;
+}
+
+.tabs {
+  display: flex;
+  margin: 24rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.tab.on {
+  background: #1aad19;
+  color: #fff;
+  font-weight: 600;
+}
+
+.line {
+  display: block;
+  font-size: 26rpx;
+  margin-bottom: 12rpx;
+}
+
+.risk {
+  margin-top: 16rpx;
+  padding: 16rpx;
+  background: #fff7e6;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  color: #ad6800;
+}
+
+.spark {
+  display: flex;
+  align-items: flex-end;
+  height: 200rpx;
+  margin-top: 16rpx;
+  border-bottom: 1px solid #eee;
+}
+
+.dot-col {
+  flex: 1;
+  height: 100%;
+  position: relative;
+}
+
+.dot {
+  position: absolute;
+  left: 50%;
+  width: 12rpx;
+  height: 12rpx;
+  margin-left: -6rpx;
+  border-radius: 50%;
+  background: #1aad19;
+}
+
+.labels {
+  white-space: nowrap;
+  margin-top: 8rpx;
+}
+
+.lab {
+  display: inline-block;
+  width: 60rpx;
+  font-size: 18rpx;
+  color: #999;
+  text-align: center;
+}

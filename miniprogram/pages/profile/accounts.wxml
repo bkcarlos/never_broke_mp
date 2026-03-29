@@ -1,0 +1,21 @@
+<view class="page">
+  <view class="toolbar">
+    <navigator url="/pages/profile/accounts-new" class="add">+ 新建</navigator>
+  </view>
+  <view class="nb-card" wx:if="{{total !== ''}}">
+    <text class="nb-muted">总资产（简算）</text>
+    <view class="big">{{total}}</view>
+  </view>
+  <block wx:for="{{groups}}" wx:key="type">
+    <view class="group-title">{{item.label}}</view>
+    <block wx:for="{{item.list}}" wx:for-item="acc" wx:key="_id">
+      <view class="acc-card">
+        <view class="row">
+          <text class="name">{{acc.name}}</text>
+          <text class="bal">{{acc.displayBalance}}</text>
+        </view>
+        <text class="nb-muted" wx:if="{{acc.type==='credit'}}">额度 {{acc.displayLimit}} / 已用 {{acc.displayUsed}}</text>
+      </view>
+    </block>
+  </block>
+</view>

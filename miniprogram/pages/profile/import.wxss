@@ -1,0 +1,14 @@
+.page {
+  padding: 24rpx;
+}
+
+.field {
+  margin: 24rpx 0;
+}
+
+.label {
+  display: block;
+  margin-bottom: 12rpx;
+  color: #666;
+  font-size: 26rpx;
+}

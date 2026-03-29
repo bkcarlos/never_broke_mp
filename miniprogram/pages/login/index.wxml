@@ -1,0 +1,14 @@
+<view class="wrap">
+  <view class="brand">
+    <text class="name">NeverBroke</text>
+    <text class="sub">认知翻身账</text>
+    <text class="slogan">让记账变得简单</text>
+  </view>
+
+  <button class="btn-main" type="primary" bindtap="onWechatLogin">微信一键登录</button>
+
+  <view class="agree">
+    <checkbox checked="{{agreed}}" bindtap="toggleAgree" />
+    <text class="agree-text">已阅读并同意《用户协议》与《隐私政策》</text>
+  </view>
+</view>

@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "记一笔",
+  "usingComponents": {
+    "amount-input": "/components/amount-input/amount-input",
+    "account-picker": "/components/account-picker/account-picker",
+    "category-picker": "/components/category-picker/category-picker",
+    "date-picker": "/components/date-picker/date-picker"
+  }
+}

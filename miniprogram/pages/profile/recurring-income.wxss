@@ -1,0 +1,44 @@
+.page {
+  padding: 24rpx;
+}
+
+.section {
+  margin: 16rpx 0;
+  color: #999;
+  font-size: 26rpx;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.t {
+  font-weight: 600;
+}
+
+.inp {
+  border: 1px solid #e5e5e5;
+  padding: 16rpx;
+  border-radius: 8rpx;
+  margin-bottom: 16rpx;
+  background: #fff;
+}
+
+.freq {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 16rpx 0;
+  font-size: 26rpx;
+}
+
+.freq-item {
+  margin-right: 24rpx;
+  margin-bottom: 12rpx;
+}
+
+.btn {
+  margin-top: 24rpx;
+  background: #1aad19 !important;
+}

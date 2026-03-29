@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "分期管理",
+  "usingComponents": {
+    "amount-input": "/components/amount-input/amount-input"
+  }
+}

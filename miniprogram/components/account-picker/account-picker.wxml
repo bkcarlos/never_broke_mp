@@ -1,0 +1,6 @@
+<picker mode="selector" range="{{labels}}" range-key="label" value="{{index}}" bindchange="onChange">
+  <view class="nb-picker">
+    <text class="nb-picker__text">{{display}}</text>
+    <text class="nb-picker__arrow">▼</text>
+  </view>
+</picker>

@@ -1,0 +1,24 @@
+.page {
+  padding-bottom: 48rpx;
+}
+
+.tabs {
+  display: flex;
+  margin: 24rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.tab.on {
+  background: #1aad19;
+  color: #fff;
+}

@@ -1,0 +1,25 @@
+.page {
+  padding: 24rpx;
+}
+
+.label {
+  display: block;
+  margin: 16rpx 0 8rpx;
+  color: #666;
+  font-size: 26rpx;
+}
+
+.inp {
+  padding: 20rpx;
+  background: #fff;
+  border-radius: 8rpx;
+  border: 1px solid #e5e5e5;
+  margin-bottom: 16rpx;
+}
+
+.break {
+  display: block;
+  margin-top: 16rpx;
+  word-break: break-all;
+  font-size: 22rpx;
+}

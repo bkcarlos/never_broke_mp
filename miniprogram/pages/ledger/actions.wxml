@@ -1,0 +1,6 @@
+<view class="page">
+  <navigator url="/pages/ledger/record" class="cell">记一笔</navigator>
+  <navigator url="/pages/ledger/transfer" class="cell">转账</navigator>
+  <navigator url="/pages/profile/recurring-income" open-type="navigate" class="cell">周期收入</navigator>
+  <navigator url="/pages/profile/installment" open-type="navigate" class="cell">分期管理</navigator>
+</view>

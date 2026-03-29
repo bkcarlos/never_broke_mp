@@ -1,0 +1,50 @@
+.page {
+  padding-bottom: 48rpx;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-top: 24rpx;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  margin-right: 24rpx;
+  background: #eee;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+}
+
+.nick {
+  font-size: 34rpx;
+  font-weight: 600;
+}
+
+.section {
+  padding: 24rpx 24rpx 8rpx;
+  font-size: 26rpx;
+  color: #999;
+}
+
+.cell {
+  display: block;
+  margin: 0 24rpx 16rpx;
+  padding: 28rpx 24rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  color: #333;
+  font-size: 30rpx;
+}
+
+.logout {
+  margin: 48rpx 24rpx;
+  color: #ff6b6b;
+  background: #fff;
+  border-radius: 16rpx;
+}

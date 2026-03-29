@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "新建账户",
+  "usingComponents": {
+    "amount-input": "/components/amount-input/amount-input"
+  }
+}

@@ -1,0 +1,29 @@
+<view class="page">
+  <view class="nb-card">
+    <text class="label">语言</text>
+    <picker range="{{langs}}" value="{{li}}" bindchange="onLang">
+      <view class="inp">{{langs[li]}}</view>
+    </picker>
+    <label class="row">
+      <text>隐藏金额</text>
+      <switch checked="{{hideAmount}}" bindchange="onHide" />
+    </label>
+    <text class="label">现金流安全线（元，0 表示关闭提示）</text>
+    <input class="inp" type="digit" value="{{safetyLine}}" bindinput="onSafety" />
+    <label class="row">
+      <text>预算提醒（需订阅消息）</text>
+      <switch checked="{{notifyBudget}}" bindchange="onN1" />
+    </label>
+    <label class="row">
+      <text>分期还款提醒</text>
+      <switch checked="{{notifyInstallment}}" bindchange="onN2" />
+    </label>
+    <label class="row">
+      <text>周期收入到期提醒</text>
+      <switch checked="{{notifyRecurring}}" bindchange="onN3" />
+    </label>
+    <button type="primary" bindtap="save">保存</button>
+    <button class="sub" bindtap="subscribe">请求订阅消息授权</button>
+    <text class="nb-muted tip">请在公众平台配置订阅消息模板，并将模板 ID 填入 miniprogram/config/subscribe.js</text>
+  </view>
+</view>

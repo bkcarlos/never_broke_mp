@@ -1,0 +1,40 @@
+<view class="page">
+  <view class="tabs">
+    <view class="tab {{kind==='expense'?'on':''}}" data-k="expense" bindtap="setKind">支出</view>
+    <view class="tab {{kind==='income'?'on':''}}" data-k="income" bindtap="setKind">收入</view>
+  </view>
+
+  <view class="field">
+    <text class="label">金额</text>
+    <amount-input value="{{amount}}" bind:change="onAmount" />
+  </view>
+  <view class="field">
+    <text class="label">分类</text>
+    <category-picker categories="{{categories}}" value="{{category}}" bind:change="onCategory" />
+  </view>
+  <view class="field">
+    <text class="label">账户</text>
+    <account-picker accounts="{{accounts}}" value="{{accountId}}" bind:change="onAccount" />
+  </view>
+  <view class="field">
+    <text class="label">日期</text>
+    <date-picker value="{{date}}" bind:change="onDate" />
+  </view>
+  <view class="field">
+    <text class="label">备注</text>
+    <input class="inp" placeholder="选填" value="{{note}}" bindinput="onNote" />
+  </view>
+
+  <view class="field row" wx:if="{{kind==='expense'}}">
+    <label class="chk-wrap">
+      <checkbox checked="{{createInstallment}}" bindtap="toggleInst" />
+      <text>创建分期</text>
+    </label>
+  </view>
+  <view class="field" wx:if="{{kind==='expense' && createInstallment}}">
+    <text class="label">分期期数</text>
+    <input class="inp" type="number" placeholder="如 6" value="{{installments}}" bindinput="onInst" />
+  </view>
+
+  <button class="save" type="primary" bindtap="save">保存</button>
+</view>

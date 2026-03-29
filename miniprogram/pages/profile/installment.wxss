@@ -1,0 +1,37 @@
+.page {
+  padding: 24rpx;
+}
+
+.mt {
+  margin-top: 16rpx;
+}
+
+.inp {
+  padding: 16rpx;
+  background: #fff;
+  border-radius: 8rpx;
+  border: 1px solid #e5e5e5;
+  margin: 16rpx 0;
+}
+
+.preview-result {
+  margin-top: 16rpx;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.section {
+  margin: 24rpx 0 12rpx;
+  color: #999;
+  font-size: 26rpx;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.title {
+  font-weight: 600;
+}

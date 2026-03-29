@@ -1,0 +1,13 @@
+.page {
+  padding: 24rpx;
+}
+
+.cell {
+  display: block;
+  background: #fff;
+  padding: 32rpx;
+  margin-bottom: 16rpx;
+  border-radius: 16rpx;
+  color: #333;
+  font-size: 30rpx;
+}

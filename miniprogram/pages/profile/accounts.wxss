@@ -1,0 +1,52 @@
+.page {
+  padding-bottom: 48rpx;
+}
+
+.toolbar {
+  padding: 24rpx;
+  text-align: right;
+}
+
+.add {
+  display: inline-block;
+  background: #1aad19;
+  color: #fff;
+  padding: 16rpx 32rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+}
+
+.big {
+  font-size: 40rpx;
+  font-weight: 600;
+  margin-top: 8rpx;
+}
+
+.group-title {
+  padding: 16rpx 24rpx;
+  font-size: 26rpx;
+  color: #999;
+}
+
+.acc-card {
+  margin: 0 24rpx 16rpx;
+  padding: 24rpx;
+  background: #fff;
+  border-radius: 16rpx;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.name {
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+.bal {
+  font-size: 30rpx;
+  font-weight: 600;
+}

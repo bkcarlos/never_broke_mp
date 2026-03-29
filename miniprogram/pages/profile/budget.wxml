@@ -1,0 +1,16 @@
+<view class="page">
+  <view class="nb-card">
+    <text class="nb-muted">本月（{{yearMonth}}）</text>
+    <view class="field">
+      <text class="label">月度总预算</text>
+      <input class="inp" type="digit" placeholder="金额" value="{{totalBudget}}" bindinput="onBudget" />
+    </view>
+    <view wx:if="{{usage}}">
+      <text>已用 {{usage.used}} / {{usage.total}}</text>
+      <view class="bar-bg">
+        <view class="bar-fill" style="width: {{usage.pct}}%;"></view>
+      </view>
+    </view>
+    <button type="primary" class="btn" bindtap="save">保存</button>
+  </view>
+</view>

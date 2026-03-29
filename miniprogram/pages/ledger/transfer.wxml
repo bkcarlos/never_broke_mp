@@ -1,0 +1,24 @@
+<view class="page">
+  <view class="field">
+    <text class="label">转出账户</text>
+    <account-picker accounts="{{accounts}}" value="{{fromId}}" bind:change="onFrom" />
+    <text class="hint nb-muted" wx:if="{{fromAccount}}">余额相关请见账户类型说明</text>
+  </view>
+  <view class="field">
+    <text class="label">转入账户</text>
+    <account-picker accounts="{{accounts}}" value="{{toId}}" bind:change="onTo" />
+  </view>
+  <view class="field">
+    <text class="label">金额</text>
+    <amount-input value="{{amount}}" bind:change="onAmount" />
+  </view>
+  <view class="field">
+    <text class="label">日期</text>
+    <date-picker value="{{date}}" bind:change="onDate" />
+  </view>
+  <view class="field">
+    <text class="label">备注</text>
+    <input class="inp" placeholder="选填" value="{{note}}" bindinput="onNote" />
+  </view>
+  <button class="save" type="primary" bindtap="save">确认转账</button>
+</view>

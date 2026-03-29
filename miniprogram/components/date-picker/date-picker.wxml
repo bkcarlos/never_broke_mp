@@ -1,0 +1,6 @@
+<picker mode="date" value="{{value}}" bindchange="onChange">
+  <view class="nb-picker">
+    <text class="nb-picker__text">{{value}}</text>
+    <text class="nb-picker__icon">📅</text>
+  </view>
+</picker>
