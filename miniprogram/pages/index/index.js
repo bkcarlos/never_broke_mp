@@ -18,8 +18,10 @@ Page({
       return
     }
     this.loadI18n()
-    await this.loadSettings()
-    await this.loadOverview()
+    await Promise.all([
+      this.loadSettings(),
+      this.loadOverview()
+    ])
   },
 
   loadI18n() {
