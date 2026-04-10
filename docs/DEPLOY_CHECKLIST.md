@@ -55,12 +55,11 @@
 - `transactions`：`openid + date`
 - `budgets`：`openid + year + month`
 - `accounts`：`openid`
-
-> 建议在正式部署前，到代码中进一步核对查询条件，补齐其余集合的索引设计，例如：
-> - `installment_plans`：`openid + nextDueDate` 或 `openid + status`
-> - `recurring_incomes`：`openid + nextExecuteDate` 或 `openid + status`
-> - `salary_plans`：`openid`
-> - `user_settings`：`openid`
+- `installment_plans`：`openid + status`
+- `recurring_incomes`：`openid + nextDueDate`
+- `salary_plans`：`openid`
+- `user_settings`：`openid`
+- `notification_log`：`openid + type + date`
 
 ---
 
