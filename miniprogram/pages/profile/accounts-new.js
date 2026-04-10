@@ -57,17 +57,20 @@ Page({
     onboarding: false,
     editId: '',
     isEdit: false,
+    editMode: '',
   },
 
   onLoad(query) {
     this._accountLoaded = false
     const onboarding = query && (query.onboarding === '1' || query.onboarding === 'true')
     const editId = (query && query.id) || ''
+    const editMode = (query && query.mode) || ''
     if (editId) {
       this.setData({
         onboarding: false,
         editId,
         isEdit: true,
+        editMode,
       })
       // Title will be set in loadI18n
       return
@@ -78,6 +81,7 @@ Page({
     d.onboarding = !!onboarding
     d.editId = ''
     d.isEdit = false
+    d.editMode = ''
     this.setData(d)
     // Title will be set in loadI18n
   },
@@ -96,9 +100,10 @@ Page({
     const t = app.globalData.i18n.t.bind(app.globalData.i18n)
     const isEdit = this.data.isEdit
     const onboarding = this.data.onboarding
+    const editMode = this.data.editMode
 
     let titleKey = 'accounts.createTitle'
-    if (isEdit) titleKey = 'accounts.editTitle'
+    if (isEdit) titleKey = editMode === 'limit' ? 'accounts.quickAdjustLimit' : 'accounts.editTitle'
     else if (onboarding) titleKey = 'accounts.onboardingTitle'
 
     wx.setNavigationBarTitle({ title: t(titleKey) })
@@ -278,6 +283,7 @@ Page({
       ci,
       editId,
       isEdit,
+      editMode,
     } = this.data
     if (!this.validateBeforeSave()) return
 
@@ -286,14 +292,16 @@ Page({
     wx.showLoading({ title: isEdit ? t('common.saving') : t('accounts.creating') })
     try {
       if (isEdit && editId) {
-        await callCloud('account', {
-          action: 'update',
-          id: editId,
-          institution,
-          balance: Number(balance) || 0,
-          currency: currencies[ci] || 'CNY',
-          cardLast4: cardLast4Out,
-        })
+        if (editMode !== 'limit') {
+          await callCloud('account', {
+            action: 'update',
+            id: editId,
+            institution,
+            balance: Number(balance) || 0,
+            currency: currencies[ci] || 'CNY',
+            cardLast4: cardLast4Out,
+          })
+        }
         if (type === 'credit') {
           await callCloud('account', {
             action: 'updateCreditLimits',
@@ -324,6 +332,7 @@ Page({
       d2.onboarding = false
       d2.editId = ''
       d2.isEdit = false
+      d2.editMode = ''
       this.setData(d2)
       wx.hideLoading()
       wx.showToast({ title: t('accounts.created'), icon: 'success' })

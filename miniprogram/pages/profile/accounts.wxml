@@ -3,6 +3,19 @@
     <navigator url="/pages/profile/accounts-new" class="add">{{i18n.new}}</navigator>
   </view>
   <scroll-view scroll-x class="filter-scroll" enable-flex="{{true}}" show-scrollbar="{{false}}">
+    <view class="filter-row archive-tabs">
+      <view
+        wx:for="{{archiveTabs}}"
+        wx:key="key"
+        class="filter-chip archive-tab {{archiveView === item.key ? 'on' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="onArchiveViewTap"
+      >
+        {{item.label}}
+      </view>
+    </view>
+  </scroll-view>
+  <scroll-view scroll-x class="filter-scroll" enable-flex="{{true}}" show-scrollbar="{{false}}" wx:if="{{archiveView === 'active'}}">
     <view class="filter-row">
       <view
         wx:for="{{filterTabs}}"
@@ -18,6 +31,9 @@
   <view class="empty-hint nb-muted" wx:if="{{filterKey !== 'all' && !groups.length && groupsAll.length}}">
     {{i18n.noTypeAccounts}}
   </view>
+  <view class="empty-hint nb-muted" wx:if="{{archiveView === 'archived' && !groups.length}}">
+    {{i18n.noArchivedAccounts}}
+  </view>
   <view class="nb-card" wx:if="{{total !== ''}}">
     <text class="nb-muted">{{i18n.totalAssets}}</text>
     <view class="big">{{total}}</view>
@@ -25,12 +41,20 @@
   <block wx:for="{{groups}}" wx:key="type">
     <view class="group-title">{{item.label}}</view>
     <block wx:for="{{item.list}}" wx:for-item="acc" wx:key="_id">
-      <view class="acc-card" bindtap="onAccTap" data-id="{{acc._id}}" data-name="{{acc.name}}">
+      <view class="acc-card" bindtap="onAccTap" data-id="{{acc._id}}" data-name="{{acc.name}}" data-archived="{{acc.archived}}">
         <view class="row">
           <text class="name">{{acc.name}}</text>
           <text class="bal">{{acc.displayBalance}}</text>
         </view>
         <text class="nb-muted" wx:if="{{acc.type==='credit'}}">{{i18n.limit}} {{acc.displayLimit}} / {{i18n.used}} {{acc.displayUsed}}</text>
+        <view
+          wx:if="{{acc.type==='credit' && archiveView === 'active'}}"
+          class="acc-quick-action"
+          data-id="{{acc._id}}"
+          catchtap="onQuickAdjustLimit"
+        >
+          {{i18n.quickAdjustLimit}}
+        </view>
       </view>
     </block>
   </block>

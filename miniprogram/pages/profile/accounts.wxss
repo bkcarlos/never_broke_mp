@@ -21,6 +21,10 @@
   padding-bottom: 4rpx;
 }
 
+.archive-tabs {
+  width: 100%;
+}
+
 .filter-chip {
   display: inline-block;
   flex-shrink: 0;
@@ -30,6 +34,11 @@
   font-size: 26rpx;
   color: #333;
   border: 1px solid #e5e5e5;
+}
+
+.archive-tab {
+  min-width: 180rpx;
+  text-align: center;
 }
 
 .filter-chip.on {
@@ -71,6 +80,19 @@
   padding: 24rpx;
   background: #fff;
   border-radius: 16rpx;
+}
+
+.acc-quick-action {
+  margin-top: 16rpx;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10rpx 20rpx;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  line-height: 1;
+  color: #1aad19;
+  background: rgba(26, 173, 25, 0.08);
 }
 
 .row {

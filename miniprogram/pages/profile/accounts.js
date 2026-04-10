@@ -15,6 +15,8 @@ Page({
     groupsAll: [],
     filterKey: 'all',
     filterTabs: [],
+    archiveView: 'active',
+    archiveTabs: [],
     total: '',
   },
 
@@ -35,10 +37,16 @@ Page({
       i18n: {
         new: t('accounts.new'),
         noTypeAccounts: t('accounts.noTypeAccounts'),
+        noArchivedAccounts: t('accounts.noArchivedAccounts'),
         totalAssets: t('accounts.totalAssets'),
         limit: t('accounts.limit'),
         used: t('accounts.used'),
+        quickAdjustLimit: t('accounts.quickAdjustLimit'),
       },
+      archiveTabs: [
+        { key: 'active', label: t('accounts.viewActive') },
+        { key: 'archived', label: t('accounts.viewArchived') },
+      ],
       filterTabs: [
         { key: 'all', label: t('accounts.filterAll') },
         { key: 'cash', label: t('accounts.filterCash') },
@@ -61,7 +69,7 @@ Page({
     }
 
     try {
-      const data = await callCloud('account', { action: 'list' })
+      const data = await callCloud('account', { action: 'list', archived: this.data.archiveView === 'archived' })
       const list = data.list || []
       let total = 0
       const currencySet = new Set()
@@ -109,7 +117,7 @@ Page({
       this.setData(
         {
           groupsAll: groups,
-          total: totalStr,
+          total: this.data.archiveView === 'active' ? totalStr : '',
         },
         () => this.applyFilter(),
       )
@@ -129,6 +137,12 @@ Page({
     this.setData({ groups })
   },
 
+  onArchiveViewTap(e) {
+    const key = e.currentTarget.dataset.key || 'active'
+    if (key === this.data.archiveView) return
+    this.setData({ archiveView: key, filterKey: 'all' }, () => this.load())
+  },
+
   onFilterTap(e) {
     const key = e.currentTarget.dataset.key || 'all'
     this.setData({ filterKey: key })
@@ -139,9 +153,13 @@ Page({
     const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     const id = e.currentTarget.dataset.id
     const name = e.currentTarget.dataset.name || t('accounts.pickAccount')
+    const isArchived = !!e.currentTarget.dataset.archived
     if (!id) return
+    const itemList = isArchived
+      ? [t('accounts.edit'), t('accounts.restore')]
+      : [t('accounts.edit'), t('accounts.archive')]
     wx.showActionSheet({
-      itemList: [t('accounts.edit'), t('accounts.archive')],
+      itemList,
       success: (res) => {
         if (res.tapIndex === 0) {
           wx.navigateTo({ url: '/pages/profile/accounts-new?id=' + id })
@@ -149,17 +167,22 @@ Page({
         }
         if (res.tapIndex === 1) {
           wx.showModal({
-            title: t('accounts.archiveTitle'),
-            content: t('accounts.archiveConfirm', [name]),
+            title: isArchived ? t('accounts.restoreTitle') : t('accounts.archiveTitle'),
+            content: isArchived
+              ? t('accounts.restoreConfirm', [name])
+              : t('accounts.archiveConfirm', [name]),
             success: async (r) => {
               if (!r.confirm) return
               try {
                 await callCloud('account', {
                   action: 'update',
                   id,
-                  archived: true,
+                  archived: !isArchived,
                 })
-                wx.showToast({ title: t('accounts.archived'), icon: 'success' })
+                wx.showToast({
+                  title: isArchived ? t('accounts.restored') : t('accounts.archived'),
+                  icon: 'success',
+                })
                 this.load()
               } catch (err) {
                 wx.showToast({ title: err.message || t('common.failed'), icon: 'none' })
@@ -169,5 +192,12 @@ Page({
         }
       },
     })
+  },
+
+  onQuickAdjustLimit(e) {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
+    const id = e.currentTarget.dataset.id
+    if (!id) return
+    wx.navigateTo({ url: '/pages/profile/accounts-new?id=' + id + '&mode=limit' })
   },
 })
