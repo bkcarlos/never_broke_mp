@@ -1,5 +1,5 @@
 const { callCloud } = require('../../utils/request.js')
-const { formatMoney } = require('../../utils/format.js')
+const { fetchHideAmount, formatMoneySafe } = require('../../utils/format.js')
 const auth = require('../../utils/auth.js')
 
 function normalizeGroupType(t) {
@@ -18,9 +18,10 @@ Page({
     total: '',
   },
 
-  onShow() {
+  async onShow() {
     if (!auth.requireLogin()) return
     this.loadI18n()
+    await fetchHideAmount()
     this.load()
   },
 
@@ -75,13 +76,13 @@ Page({
           const used = Number(a.balance || 0)
           const lim = Number(a.creditLimit || 0) + Number(a.tempLimit || 0)
           const avail = Math.max(0, lim - used)
-          displayBalance = `${formatMoney(avail, cur)} ${t('accounts.available')}`
-          displayLimit = formatMoney(lim, cur)
-          displayUsed = formatMoney(used, cur)
+          displayBalance = `${formatMoneySafe(avail, cur)} ${t('accounts.available')}`
+          displayLimit = formatMoneySafe(lim, cur)
+          displayUsed = formatMoneySafe(used, cur)
           total += avail
         } else {
           const bal = Number(a.balance || 0)
-          displayBalance = formatMoney(bal, cur)
+          displayBalance = formatMoneySafe(bal, cur)
           total += bal
         }
         const g = normalizeGroupType(a.type)
@@ -103,7 +104,7 @@ Page({
         }))
       const totalStr =
         currencySet.size <= 1
-          ? formatMoney(total, currencySet.size === 1 ? [...currencySet][0] : 'CNY')
+          ? formatMoneySafe(total, currencySet.size === 1 ? [...currencySet][0] : 'CNY')
           : t('accounts.multiCurrency')
       this.setData(
         {

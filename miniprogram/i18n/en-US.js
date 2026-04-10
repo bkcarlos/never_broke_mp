@@ -212,6 +212,7 @@ module.exports = {
     presetLast3Months: 'Last 3 months',
     presetLast6Months: 'Last 6 months',
     presetThisYear: 'This year',
+    presetAll: 'All',
     startDate: 'Start date',
     endDate: 'End date',
     generate: 'Generate CSV and get download link',
@@ -271,7 +272,7 @@ module.exports = {
     noFileSelected: 'No file selected',
     parseError: 'Parse failed',
     hint:
-      'CSV UTF-8 with headers: date, type, amount, category, note (or Chinese equivalents). Imports transactions only; balances are not adjusted—reconcile in Accounts after import.',
+      'CSV UTF-8 with headers: date, type, amount, category, note (or Chinese equivalents). Import writes transactions and updates related account balances based on the imported rows, so please verify the results afterwards.',
     selectedFile: 'Selected: {0}',
     previewRows: '{0} rows (preview up to 50)',
     selectDefaultAccount: 'Choose default account',

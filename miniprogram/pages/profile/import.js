@@ -11,6 +11,7 @@ Page({
     csvText: '',
     previewCount: 0,
     previewRowsLine: '',
+    previewReady: false,
   },
 
   onShow() {
@@ -70,6 +71,7 @@ Page({
               csvText: r.data,
               previewCount: 0,
               previewRowsLine: '',
+              previewReady: false,
               selectedFileLine: t2('importData.selectedFile', f.name),
             })
           },
@@ -94,6 +96,7 @@ Page({
       this.setData({
         previewCount: count,
         previewRowsLine: t('importData.previewRows', String(count)),
+        previewReady: true,
       })
       wx.showToast({ title: t('importData.previewDone'), icon: 'success' })
     } catch (e) {
@@ -107,7 +110,7 @@ Page({
       wx.showToast({ title: t('importData.selectDefaultAccount'), icon: 'none' })
       return
     }
-    if (!this.data.csvText) {
+    if (!this.data.previewReady) {
       wx.showToast({ title: t('importData.pleasePreview'), icon: 'none' })
       return
     }
@@ -118,8 +121,13 @@ Page({
         csvText: this.data.csvText,
         defaultAccountId: this.data.accountId,
       })
+      const successCount =
+        data && data.summary && typeof data.summary.success === 'number' ? data.summary.success : 0
       wx.hideLoading()
-      wx.showToast({ title: t('importData.importCountToast', String(data.inserted)), icon: 'success' })
+      wx.showToast({
+        title: t('importData.importCountToast', String(successCount)),
+        icon: 'success',
+      })
     } catch (e) {
       wx.hideLoading()
       wx.showToast({ title: e.message || t('common.failed'), icon: 'none' })
