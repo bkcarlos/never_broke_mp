@@ -41,6 +41,7 @@ Page({
         t('exportData.presetLast3Months'),
         t('exportData.presetLast6Months'),
         t('exportData.presetThisYear'),
+        t('exportData.presetAll'),
       ],
     })
   },
@@ -58,6 +59,8 @@ Page({
       s = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate())
     } else if (i === 3) {
       s = new Date(now.getFullYear(), 0, 1)
+    } else if (i === 4) {
+      s = new Date(2000, 0, 1)
     } else {
       s = now
     }

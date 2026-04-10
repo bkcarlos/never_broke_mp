@@ -1,5 +1,7 @@
 const cloud = require('wx-server-sdk')
 
+const { SERVER_TEMPLATE_IDS } = require('../../miniprogram/config/subscribe.js')
+
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -15,11 +17,7 @@ function fail(code, message) {
  * 模板 ID 配置（需在微信公众平台订阅消息中创建模板后填入）
  * 留空时将安全降级，不发送推送但记录日志
  */
-const TEMPLATE_IDS = {
-  budget: '',        // 预算提醒模板 ID
-  installment: '',   // 分期还款提醒模板 ID
-  recurring: '',     // 周期收入提醒模板 ID
-}
+const TEMPLATE_IDS = SERVER_TEMPLATE_IDS
 
 /**
  * 发送订阅消息

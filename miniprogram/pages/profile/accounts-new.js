@@ -291,6 +291,7 @@ Page({
           id: editId,
           institution,
           balance: Number(balance) || 0,
+          currency: currencies[ci] || 'CNY',
           cardLast4: cardLast4Out,
         })
         if (type === 'credit') {

@@ -212,6 +212,7 @@ module.exports = {
     presetLast3Months: '近3个月',
     presetLast6Months: '近6个月',
     presetThisYear: '本年',
+    presetAll: '全部',
     startDate: '开始日期',
     endDate: '结束日期',
     generate: '生成 CSV 并获取下载链接',
@@ -271,7 +272,7 @@ module.exports = {
     noFileSelected: '未选择文件',
     parseError: '解析失败',
     hint:
-      '支持 CSV（UTF-8），表头含 date/日期, type/类型, amount/金额, category/分类, note/备注。导入仅写入流水，不会自动调整账户余额，导入后请在账户管理中核对余额。',
+      '支持 CSV（UTF-8），表头含 date/日期, type/类型, amount/金额, category/分类, note/备注。导入会写入流水，并按导入结果同步调整对应账户余额，请在导入后复核数据。',
     selectedFile: '已选：{0}',
     previewRows: '共 {0} 条（预览前 50 行）',
     selectDefaultAccount: '请选择默认账户',

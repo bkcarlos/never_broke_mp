@@ -43,7 +43,12 @@ function drawLineCanvas(canvas, width, height, points) {
   canvas.height = height * dpr
   ctx.scale(dpr, dpr)
   ctx.clearRect(0, 0, width, height)
-  if (!points.length) return
+  if (!points.length) {
+    ctx.fillStyle = '#999'
+    ctx.font = '14px sans-serif'
+    ctx.fillText('暂无数据', width / 2 - 32, height / 2)
+    return
+  }
   const maxV = Math.max(...points.map((p) => p.value), 1)
   const minV = Math.min(...points.map((p) => p.value), 0)
   const span = maxV - minV || 1

@@ -148,12 +148,13 @@ exports.main = async (event) => {
     }
 
     if (action === 'update') {
-      const { id, archived, balance, institution: instIn, bank, cardLast4: cardRaw } = event
+      const { id, archived, balance, currency: currencyIn, institution: instIn, bank, cardLast4: cardRaw } = event
       if (!id) return fail(400, '缺少 id')
       const cur = await col.doc(id).get()
       if (!cur.data || cur.data.openid !== openid) return fail(403, '无权操作')
       const patch = { updatedAt: now }
       if (balance !== undefined) patch.balance = Number(balance)
+      if (currencyIn !== undefined) patch.currency = normalizeCurrency(currencyIn)
       if (archived !== undefined) patch.archived = !!archived
       if (instIn !== undefined || bank !== undefined) {
         const inst = resolveInstitution({ institution: instIn, bank }, cur.data)
