@@ -10,7 +10,7 @@
 4. 在每个云函数目录执行依赖安装并上传部署：
    ```bash
    cd cloudfunctions/login && npm install && cd ../..
-   # 对 account、transaction、budget、installment、recurring、payroll、cashflow、report、dataManage、settings 重复执行
+   # 对 account、transaction、budget、installment、recurring、payroll、cashflow、report、dataManage、settings、notify 重复执行
    ```
    或在开发者工具中右键各云函数目录选择「上传并部署：云端安装依赖」。
 5. 编译运行小程序；首次使用在登录页点击「微信一键登录」，再到「我的 → 账户管理」创建账户后即可记账。
@@ -32,6 +32,8 @@ npm run check
 
 - 图表：报表与现金流使用 **Canvas 2D 自绘**（见 `miniprogram/utils/chart-draw.js`）；可选接入 ECharts 见 [docs/ECHARTS.md](./docs/ECHARTS.md)。
 - 测试与上线：[docs/TESTING.md](./docs/TESTING.md)、[docs/LAUNCH.md](./docs/LAUNCH.md)。
+- 分类显示：通过 `miniprogram/utils/category-label-helper.js` 兼容旧分类键并输出当前语言标签。
+- 底部导航国际化：通过 `miniprogram/utils/tabbar-i18n.js` 在启动与设置保存后同步 TabBar 文案。
 - 薪资与个税为**演示算法**，请以实际扣缴为准。
 - 导入 CSV 请使用 **UTF-8** 编码。
 
@@ -50,3 +52,4 @@ npm run check
 | report | 首页概览、报表、时间线 |
 | dataManage | 导入/导出 CSV |
 | settings | 用户设置 |
+| notify | 订阅消息提醒与发送日志 |
