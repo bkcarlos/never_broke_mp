@@ -2,17 +2,19 @@
 
 在云开发控制台创建以下集合（名称建议一致）：
 
-| 集合 | 说明 |
-|------|------|
-| users | 用户（openid、昵称、头像） |
-| accounts | 账户 |
-| transactions | 交易 |
-| budgets | 月度预算 |
-| installment_plans | 分期计划 |
-| recurring_incomes | 周期收入 |
-| user_settings | 用户设置 |
-| salary_plans | 工资方案 |
-| notification_log | 订阅消息发送日志与去重记录 |
+
+| 集合                | 说明               |
+| ----------------- | ---------------- |
+| users             | 用户（openid、昵称、头像） |
+| accounts          | 账户               |
+| transactions      | 交易               |
+| budgets           | 月度预算             |
+| installment_plans | 分期计划             |
+| recurring_incomes | 周期收入             |
+| user_settings     | 用户设置             |
+| salary_plans      | 工资方案             |
+| notification_log  | 订阅消息发送日志与去重记录    |
+
 
 ## 权限建议
 
@@ -33,12 +35,14 @@
 ## 字段结构建议
 
 ### `users`
+
 - `openid`: 用户唯一标识
 - `nickName`: 用户昵称
 - `avatarUrl`: 头像地址
 - `createdAt` / `updatedAt`: 创建与更新时间
 
 ### `accounts`
+
 - `openid`: 数据归属用户
 - `name`: 账户名称
 - `type`: 账户类型（现金 / 储蓄 / 信用卡等）
@@ -49,6 +53,7 @@
 - `createdAt` / `updatedAt`: 创建与更新时间
 
 ### `transactions`
+
 - `openid`: 数据归属用户
 - `type`: 交易类型（income / expense / transfer）
 - `accountId`: 主账户 ID
@@ -61,6 +66,7 @@
 - `createdAt` / `updatedAt`: 创建与更新时间
 
 ### `budgets`
+
 - `openid`: 数据归属用户
 - `year`: 预算年份
 - `month`: 预算月份
@@ -70,6 +76,7 @@
 - `createdAt` / `updatedAt`: 创建与更新时间
 
 ### `installment_plans`
+
 - `openid`: 数据归属用户
 - `title`: 分期标题
 - `totalAmount`: 总金额
@@ -81,6 +88,7 @@
 - `createdAt` / `updatedAt`: 创建与更新时间
 
 ### `recurring_incomes`
+
 - `openid`: 数据归属用户
 - `name`: 周期收入名称
 - `amount`: 金额
@@ -91,6 +99,7 @@
 - `createdAt` / `updatedAt`: 创建与更新时间
 
 ### `user_settings`
+
 - `openid`: 数据归属用户
 - `language`: 语言设置
 - `hideAmount`: 是否隐藏金额
@@ -101,6 +110,7 @@
 - `createdAt` / `updatedAt`: 创建与更新时间
 
 ### `salary_plans`
+
 - `openid`: 数据归属用户
 - `name`: 薪资方案名称
 - `baseSalary`: 基本工资
@@ -111,6 +121,7 @@
 - `createdAt` / `updatedAt`: 创建与更新时间
 
 ### `notification_log`
+
 - `openid`: 接收用户
 - `type`: 通知类型（budget / installment / recurring）
 - `date`: 发送日期（YYYY-MM-DD）
