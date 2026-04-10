@@ -1,31 +1,50 @@
 <view class="page">
-  <view class="section">进行中的周期收入</view>
+  <view class="section">{{i18n.sectionActive}}</view>
   <block wx:for="{{list}}" wx:key="_id">
     <view class="nb-card {{item.isDue ? 'due' : ''}}">
       <view class="row">
         <text class="t">{{item.name}}</text>
-        <text class="due-tag" wx:if="{{item.isDue}}">已到期</text>
+        <text class="due-tag" wx:if="{{item.isDue}}">{{i18n.dueTag}}</text>
       </view>
-      <text class="sub-line">{{item.displayAmount}} · {{item.frequency}}</text>
-      <text class="nb-muted">下次到期 {{item.nextDueDate}}</text>
+      <text class="sub-line">{{item.displayAmount}} · {{item.frequencyLabel}}</text>
+      <text class="nb-muted">{{i18n.nextDuePrefix}} {{item.nextDueDate}}</text>
       <view class="row-btns">
-        <button size="mini" type="primary" bindtap="realize" data-id="{{item._id}}">实现收入</button>
-        <button size="mini" bindtap="removeItem" data-id="{{item._id}}" data-name="{{item.name}}">删除</button>
+        <button size="mini" type="primary" bindtap="realize" data-id="{{item._id}}">{{i18n.realizeBtn}}</button>
+        <button size="mini" bindtap="removeItem" data-id="{{item._id}}" data-name="{{item.name}}">{{i18n.deleteBtn}}</button>
       </view>
     </view>
   </block>
 
-  <view class="section">新建</view>
+  <view class="section">{{i18n.sectionNew}}</view>
   <view class="nb-card">
-    <input class="inp" placeholder="名称" value="{{name}}" bindinput="onName" />
-    <amount-input value="{{amount}}" bind:change="onAmt" />
-    <radio-group class="freq" bindchange="onFreq">
-      <label class="freq-item"><radio value="weekly" checked="{{frequency === 'weekly'}}" />每周</label>
-      <label class="freq-item"><radio value="monthly" checked="{{frequency === 'monthly'}}" />每月</label>
-      <label class="freq-item"><radio value="yearly" checked="{{frequency === 'yearly'}}" />每年</label>
-    </radio-group>
+    <input class="inp" placeholder="{{i18n.namePlaceholder}}" value="{{name}}" bindinput="onName" />
+    <text class="nb-muted small-label">{{i18n.amount}}</text>
+    <block wx:for="{{[formKey]}}" wx:key="*this">
+      <amount-input value="{{amount}}" bind:change="onAmt" />
+    </block>
+    <scroll-view class="freq-scroll" scroll-x="true" show-scrollbar="{{false}}">
+      <view class="freq-row">
+        <view
+          class="freq-chip {{frequency === 'weekly' ? 'on' : ''}}"
+          data-v="weekly"
+          bindtap="pickFreq"
+        >{{i18n.frequencyWeekly}}</view>
+        <view
+          class="freq-chip {{frequency === 'monthly' ? 'on' : ''}}"
+          data-v="monthly"
+          bindtap="pickFreq"
+        >{{i18n.frequencyMonthly}}</view>
+        <view
+          class="freq-chip {{frequency === 'yearly' ? 'on' : ''}}"
+          data-v="yearly"
+          bindtap="pickFreq"
+        >{{i18n.frequencyYearly}}</view>
+      </view>
+    </scroll-view>
+    <text class="nb-muted small-label">{{i18n.startDateLabel}}</text>
     <date-picker value="{{startDate}}" bind:change="onStart" />
+    <text class="nb-muted small-label">{{i18n.relatedAccount}}</text>
     <account-picker accounts="{{accounts}}" value="{{accountId}}" bind:change="onAcc" />
-    <button type="primary" class="btn" bindtap="create">保存</button>
+    <button type="primary" class="btn" bindtap="create">{{i18n.save}}</button>
   </view>
 </view>

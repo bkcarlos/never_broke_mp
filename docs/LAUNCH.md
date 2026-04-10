@@ -10,7 +10,8 @@
 
 ## 建议
 
-- 配置云函数**定时触发器**（若需主动推送）：预算/分期/周期提醒需服务端调度 + `subscribeMessage.send`（需自行扩展云函数，当前以客户端授权为主）。
+- 配置云函数**定时触发器**：已新增 `cloudfunctions/notify` 云函数，默认支持 `sendBudgetAlerts` / `sendInstallmentAlerts` / `sendRecurringAlerts` / `sendAll`。可在云开发控制台为该云函数配置定时触发，或使用仓库内 `cloudfunctions/notify/config.json` 作为部署参考。
+- 预算/分期/周期提醒由服务端调度后调用 `cloud.openapi.subscribeMessage.send`；若模板 ID 未配置，会安全降级为跳过发送并记录日志，不会中断任务。
 - 打开小程序「性能」面板检查首包与 setData 频率；必要时对报表等页做分包。
 - 真机网络弱网测试（云函数重试已默认 2 次）。
 

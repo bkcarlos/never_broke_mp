@@ -4,46 +4,50 @@
   </picker>
 
   <view class="nb-card" wx:if="{{summary}}">
-    <view class="nb-title">月度汇总</view>
-    <view class="row"><text>收入</text><text class="green">{{summary.income}}</text></view>
-    <view class="row"><text>支出</text><text class="red">{{summary.expense}}</text></view>
-    <view class="row"><text>结余</text><text>{{summary.balance}}</text></view>
+    <view class="nb-title">{{i18n.monthlySummary}}</view>
+    <view class="row nb-muted" wx:if="{{summary.multiCurrency}}">{{i18n.multiCurrencyHint}}</view>
+    <view wx:for="{{summary.rows}}" wx:key="currency" class="currency-block">
+      <view class="row nb-muted">{{item.currency}}</view>
+      <view class="row"><text>{{i18n.income}}</text><text class="green">{{item.income}}</text></view>
+      <view class="row"><text>{{i18n.expense}}</text><text class="red">{{item.expense}}</text></view>
+      <view class="row"><text>{{i18n.balance}}</text><text>{{item.balance}}</text></view>
+    </view>
   </view>
 
-  <view class="nb-card" wx:if="{{categories.length}}">
-    <view class="nb-title">支出分类占比</view>
-    <view class="chart-wrap" wx:if="{{showCharts}}">
+  <view class="nb-card" wx:for="{{categorySections}}" wx:key="currency" wx:if="{{item.categories.length}}">
+    <view class="nb-title">{{i18n.categoryRatio}}（{{item.currency}}）</view>
+    <view class="chart-wrap" wx:if="{{showCharts && index === 0}}">
       <canvas type="2d" id="pieCanvas" class="chart-pie"></canvas>
     </view>
-    <block wx:for="{{categories}}" wx:key="name">
+    <block wx:for="{{item.categories}}" wx:for-item="cat" wx:for-index="catIdx" wx:key="name">
       <view class="cat-row">
-        <text>{{item.name}}</text>
-        <text>{{item.amount}} ({{item.ratio}}%)</text>
+        <text>{{cat.displayName}}</text>
+        <text>{{cat.amount}} ({{cat.ratio}}%)</text>
       </view>
       <view class="bar-bg">
-        <view class="bar-fill" style="width: {{item.ratio}}%;"></view>
+        <view class="bar-fill" style="width: {{cat.ratio}}%;"></view>
       </view>
     </block>
   </view>
 
-  <view class="nb-card" wx:if="{{trend.length}}">
-    <view class="nb-title">近6月支出趋势</view>
-    <view class="chart-wrap line-wrap" wx:if="{{showCharts}}">
+  <view class="nb-card" wx:for="{{trendSections}}" wx:key="currency" wx:if="{{item.list.length}}">
+    <view class="nb-title">{{i18n.trend6Months}}（{{item.currency}}）</view>
+    <view class="chart-wrap line-wrap" wx:if="{{showCharts && index === 0}}">
       <canvas type="2d" id="lineCanvas" class="chart-line"></canvas>
     </view>
-    <block wx:for="{{trend}}" wx:key="yearMonth">
+    <block wx:for="{{item.list}}" wx:for-item="row" wx:for-index="rowIdx" wx:key="yearMonth">
       <view class="trend-row">
-        <text>{{item.yearMonth}}</text>
+        <text>{{row.yearMonth}}</text>
         <view class="trend-bar-wrap">
-          <view class="trend-bar" style="width: {{item.barPct}}%;"></view>
+          <view class="trend-bar" style="width: {{row.barPct}}%;"></view>
         </view>
-        <text class="trend-val">{{item.expense}}</text>
+        <text class="trend-val">{{row.expense}}</text>
       </view>
     </block>
   </view>
 
   <view class="links">
-    <navigator url="/pages/reports/cashflow" class="link">现金流预测</navigator>
-    <navigator url="/pages/reports/timeline" class="link">时间线</navigator>
+    <navigator url="/pages/reports/cashflow" class="link">{{i18n.cashflow}}</navigator>
+    <navigator url="/pages/reports/timeline" class="link">{{i18n.timeline}}</navigator>
   </view>
 </view>

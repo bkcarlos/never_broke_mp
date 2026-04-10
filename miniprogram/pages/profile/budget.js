@@ -1,11 +1,12 @@
 const { callCloud } = require('../../utils/request.js')
-const { formatMoney, currentYearMonth } = require('../../utils/format.js')
+const { formatMoneySafe, fetchHideAmount, currentYearMonth } = require('../../utils/format.js')
 const auth = require('../../utils/auth.js')
 
 const WARN_KEY = 'nb_budget_warn_ym'
 
 Page({
   data: {
+    i18n: {},
     yearMonth: '',
     totalBudget: '',
     usage: null,
@@ -17,13 +18,35 @@ Page({
 
   onShow() {
     if (!auth.requireLogin()) return
-    const ym = currentYearMonth()
-    this.setData({ yearMonth: ym })
-    this.load(ym)
-    this.loadHistory()
+    this.loadI18n()
+    fetchHideAmount().finally(() => {
+      const ym = currentYearMonth()
+      this.setData({ yearMonth: ym })
+      this.load(ym)
+      this.loadHistory()
+    })
+  },
+
+  loadI18n() {
+    const app = getApp()
+    const t = app.globalData.i18n.t.bind(app.globalData.i18n)
+    wx.setNavigationBarTitle({ title: t('budget.title') })
+    this.setData({
+      i18n: {
+        monthThis: t('budget.monthThis', this.data.yearMonth || currentYearMonth()),
+        monthTotalBudget: t('budget.monthTotalBudget'),
+        inputPlaceholder: t('budget.inputPlaceholder'),
+        copyPrevBudget: t('budget.copyPrevBudget'),
+        alertAt80: t('budget.alertAt80'),
+        alertWhenOver: t('budget.alertWhenOver'),
+        save: t('common.save'),
+        historyExecution: t('budget.historyExecution'),
+      },
+    })
   },
 
   maybeAlertBudget(total, used, budgetDoc) {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     if (!total || total <= 0 || !budgetDoc) return
     const pct = Math.min(100, Math.round((used / total) * 100))
     const ym = this.data.yearMonth
@@ -32,8 +55,8 @@ Page({
     if (pct >= 100 && budgetDoc.alertOver !== false) {
       wx.setStorageSync(WARN_KEY, ym)
       wx.showModal({
-        title: '预算提示',
-        content: `本月支出已超过预算（${formatMoney(used)} / ${formatMoney(total)}）。`,
+        title: t('budget.alertTitle'),
+        content: t('budget.alertOverContent', formatMoneySafe(used), formatMoneySafe(total)),
         showCancel: false,
       })
       return
@@ -41,14 +64,15 @@ Page({
     if (pct >= 80 && budgetDoc.alert80 !== false) {
       wx.setStorageSync(WARN_KEY, ym)
       wx.showModal({
-        title: '预算提示',
-        content: `本月预算已使用约 ${pct}%，请注意控制支出。`,
+        title: t('budget.alertTitle'),
+        content: t('budget.alert80PercentContent', String(pct)),
         showCancel: false,
       })
     }
   },
 
   async load(ym) {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     try {
       const data = await callCloud('budget', { action: 'get', yearMonth: ym })
       const total = data.totalBudget || 0
@@ -59,32 +83,45 @@ Page({
       else if (pct >= 80) barClass = 'warn'
       else if (pct > 0) barClass = 'ok'
       const b = data.budget || {}
+      const usedFmt = formatMoneySafe(used)
+      const totalFmt = formatMoneySafe(total)
       this.setData({
         totalBudget: total ? String(total) : '',
         alert80: b.alert80 !== false,
         alertOver: b.alertOver !== false,
         usage: {
-          used: formatMoney(used),
-          total: formatMoney(total),
+          used: usedFmt,
+          total: totalFmt,
           pct,
+          line: t('budget.usedSlashTotal', usedFmt, totalFmt),
         },
         barClass,
+        i18n: Object.assign({}, this.data.i18n, {
+          monthThis: t('budget.monthThis', ym),
+        }),
       })
       this.maybeAlertBudget(total, used, b)
     } catch (e) {
-      wx.showToast({ title: e.message || '加载失败', icon: 'none' })
+      wx.showToast({ title: e.message || t('common.loadFailed'), icon: 'none' })
     }
   },
 
   async loadHistory() {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     try {
       const data = await callCloud('budget', { action: 'history', limit: 12 })
-      const list = (data.list || []).map((row) => ({
-        ...row,
-        usedFmt: formatMoney(row.used),
-        totalFmt: formatMoney(row.totalBudget),
-        label: row.yearMonth + (row.over ? '（超支）' : ''),
-      }))
+      const src = data.list || []
+      const list = []
+      for (var i = 0; i < src.length; i++) {
+        var row = src[i]
+        list.push(
+          Object.assign({}, row, {
+            usedFmt: formatMoneySafe(row.used),
+            totalFmt: formatMoneySafe(row.totalBudget),
+            label: row.yearMonth + (row.over ? t('budget.overTag') : ''),
+          }),
+        )
+      }
       this.setData({ history: list })
     } catch (e) {
       /* ignore */
@@ -104,23 +141,25 @@ Page({
   },
 
   async copyPrev() {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     try {
       await callCloud('budget', {
         action: 'copyPrev',
         yearMonth: this.data.yearMonth,
       })
-      wx.showToast({ title: '已从上月复制', icon: 'success' })
+      wx.showToast({ title: t('budget.copySuccess'), icon: 'success' })
       this.load(this.data.yearMonth)
       this.loadHistory()
     } catch (e) {
-      wx.showToast({ title: e.message || '上月无预算', icon: 'none' })
+      wx.showToast({ title: e.message || t('budget.copyFail'), icon: 'none' })
     }
   },
 
   async save() {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     const tb = Number(this.data.totalBudget)
     if (tb < 0) {
-      wx.showToast({ title: '预算无效', icon: 'none' })
+      wx.showToast({ title: t('budget.invalidBudget'), icon: 'none' })
       return
     }
     try {
@@ -131,12 +170,12 @@ Page({
         alert80: this.data.alert80,
         alertOver: this.data.alertOver,
       })
-      wx.showToast({ title: '已保存', icon: 'success' })
+      wx.showToast({ title: t('common.saved'), icon: 'success' })
       wx.removeStorageSync(WARN_KEY)
       this.load(this.data.yearMonth)
       this.loadHistory()
     } catch (e) {
-      wx.showToast({ title: e.message || '失败', icon: 'none' })
+      wx.showToast({ title: e.message || t('common.failed'), icon: 'none' })
     }
   },
 })

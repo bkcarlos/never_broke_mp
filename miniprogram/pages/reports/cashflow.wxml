@@ -1,22 +1,31 @@
 <view class="page">
   <view class="tabs">
-    <view class="tab {{days===30?'on':''}}" data-d="30" bindtap="setDays">30天</view>
-    <view class="tab {{days===60?'on':''}}" data-d="60" bindtap="setDays">60天</view>
-    <view class="tab {{days===90?'on':''}}" data-d="90" bindtap="setDays">90天</view>
+    <view class="tab {{days===30?'on':''}}" data-d="30" bindtap="setDays">{{i18n.days30}}</view>
+    <view class="tab {{days===60?'on':''}}" data-d="60" bindtap="setDays">{{i18n.days60}}</view>
+    <view class="tab {{days===90?'on':''}}" data-d="90" bindtap="setDays">{{i18n.days90}}</view>
   </view>
 
   <view class="nb-card" wx:if="{{forecast}}">
-    <view class="nb-title">摘要</view>
-    <text class="line">当前折算余额：{{forecast.currentBalance}}</text>
-    <text class="line">平均日支出（近30天）：{{forecast.avgDailyExpense}}</text>
-    <text class="line">预测最低：{{forecast.minBalance}}（{{forecast.minBalanceDate}}）</text>
-    <view class="risk" wx:if="{{forecast.risks.length}}">
-      <text>风险提示：{{forecast.risks[0].message}}（{{forecast.risks[0].date}}）</text>
-    </view>
+    <view class="nb-title">{{i18n.summary}}</view>
+    <view class="row nb-muted" wx:if="{{forecast.multiCurrency}}">{{i18n.multiCurrencyHint}}</view>
+    <block wx:if="{{forecast.unsupportedMixedCurrency}}">
+      <text class="line">{{forecast.message}}</text>
+      <block wx:for="{{forecast.balanceLines}}" wx:key="currency">
+        <text class="line">{{item.currency}}：{{item.amount}}</text>
+      </block>
+    </block>
+    <block wx:else>
+      <text class="line">{{i18n.currentBalance}}：{{forecast.currentBalance}}</text>
+      <text class="line">{{i18n.avgDailyExpense}}：{{forecast.avgDailyExpense}}</text>
+      <text class="line">{{i18n.minBalance}}：{{forecast.minBalance}}（{{i18n.minBalanceDate}} {{forecast.minBalanceDate}}）</text>
+      <view class="risk" wx:if="{{forecast.risks.length}}">
+        <text>{{i18n.riskHint}}：{{forecast.risks[0].message}}（{{forecast.risks[0].date}}）</text>
+      </view>
+    </block>
   </view>
 
   <view class="nb-card" wx:if="{{chartPoints.length}}">
-    <view class="nb-title">余额走势</view>
+    <view class="nb-title">{{i18n.balanceTrend}}</view>
     <canvas type="2d" id="cfLineCanvas" class="cf-canvas"></canvas>
     <view class="spark">
       <block wx:for="{{chartPoints}}" wx:key="date">

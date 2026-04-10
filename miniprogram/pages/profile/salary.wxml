@@ -1,32 +1,32 @@
 <view class="page">
   <view class="nb-card">
-    <view class="nb-title">工资计算器</view>
-    <picker range="{{regions}}" range-key="name" value="{{ri}}" bindchange="onRegion">
+    <view class="nb-title">{{i18n.calculatorTitle}}</view>
+    <picker wx:if="{{regions.length}}" range="{{regions}}" range-key="name" value="{{ri}}" bindchange="onRegion">
       <view class="inp">{{regions[ri].name}}</view>
     </picker>
-    <input class="inp" type="digit" placeholder="税前工资" value="{{gross}}" bindinput="onGross" />
-    <button type="primary" bindtap="calc">计算</button>
+    <input class="inp" type="digit" placeholder="{{i18n.grossSalary}}" value="{{gross}}" bindinput="onGross" />
+    <button type="primary" bindtap="calc">{{i18n.calculate}}</button>
     <view wx:if="{{result}}" class="result">
-      <text class="line">税前 {{result.gross}}</text>
-      <text class="line">养老 -{{result.pension}}</text>
-      <text class="line">医疗 -{{result.medical}}</text>
-      <text class="line">失业 -{{result.unemployment}}</text>
-      <text class="line">公积金 -{{result.housingFund}}</text>
-      <text class="line">个税 -{{result.iit}}</text>
-      <text class="line strong">税后 {{result.net}}</text>
+      <text class="line">{{i18n.labelGross}} {{result.gross}}</text>
+      <text class="line">{{i18n.labelPension}} -{{result.pension}}</text>
+      <text class="line">{{i18n.labelMedical}} -{{result.medical}}</text>
+      <text class="line">{{i18n.labelUnemployment}} -{{result.unemployment}}</text>
+      <text class="line">{{i18n.labelHousing}} -{{result.housingFund}}</text>
+      <text class="line">{{i18n.labelIit}} -{{result.iit}}</text>
+      <text class="line strong">{{i18n.labelNet}} {{result.net}}</text>
       <text class="nb-muted">{{result.disclaimer}}</text>
     </view>
-    <button wx:if="{{result}}" size="mini" bindtap="savePlan">保存为方案</button>
+    <button wx:if="{{result}}" size="mini" bindtap="savePlan">{{i18n.saveAsPlan}}</button>
   </view>
 
-  <view class="section">我的方案</view>
+  <view class="section">{{i18n.myPlans}}</view>
   <block wx:for="{{plans}}" wx:key="_id">
     <view class="nb-card row">
       <view>
         <text class="t">{{item.title}}</text>
-        <text class="nb-muted block">税后 {{item.displayNet}}</text>
+        <text class="nb-muted block">{{item.netLine}}</text>
       </view>
-      <button size="mini" data-id="{{item._id}}" bindtap="removePlan">删除</button>
+      <button size="mini" data-id="{{item._id}}" bindtap="removePlan">{{i18n.remove}}</button>
     </view>
   </block>
 </view>

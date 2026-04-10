@@ -5,6 +5,28 @@ const auth = require('../../utils/auth.js')
 Page({
   data: {
     agreed: true,
+    i18n: {},
+  },
+
+  onShow() {
+    this.loadI18n()
+  },
+
+  loadI18n() {
+    const app = getApp()
+    const t = app.globalData.i18n.t.bind(app.globalData.i18n)
+    this.setData({
+      i18n: {
+        tagline: t('login.tagline'),
+        productName: t('login.productName'),
+        subtitle: t('login.subtitle'),
+        wechatLoginBtn: t('login.wechatLoginBtn'),
+        agreeRead: t('login.agreeRead'),
+        userTerms: t('login.userTerms'),
+        connect: t('login.connect'),
+        privacy: t('login.privacy'),
+      },
+    })
   },
 
   toggleAgree() {
@@ -12,44 +34,44 @@ Page({
   },
 
   showTerms() {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     wx.showModal({
-      title: '用户协议',
-      content:
-        'NeverBroke 为个人记账工具，您使用本小程序即表示同意我们按《隐私政策》处理必要信息。完整协议与政策以正式上线版本为准。',
+      title: t('login.termsTitle'),
+      content: t('login.termsBody'),
       showCancel: false,
     })
   },
 
   showPrivacy() {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     wx.showModal({
-      title: '隐私政策',
-      content:
-        '我们仅在提供服务所必需的范围内处理您的数据（如记账、云同步），数据按微信云开发安全机制隔离存储。详情以正式上线版本为准。',
+      title: t('login.privacyTitle'),
+      content: t('login.privacyBody'),
       showCancel: false,
     })
   },
 
   async onWechatLogin() {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     if (!this.data.agreed) {
-      wx.showToast({ title: '请先勾选协议', icon: 'none' })
+      wx.showToast({ title: t('login.agreeFirst'), icon: 'none' })
       return
     }
     if (!isCloudEnvConfigured()) {
       wx.showModal({
-        title: '未配置云环境',
-        content:
-          '请打开 miniprogram/config/env.js，将 CLOUD_ENV_ID 替换为微信开发者工具「云开发」控制台里的环境 ID，并上传部署 login 等云函数。',
+        title: t('login.cloudConfigTitle'),
+        content: t('login.cloudConfigBody'),
         showCancel: false,
       })
       return
     }
 
-    let nickName = '微信用户'
+    let nickName = t('login.defaultNick')
     let avatarUrl = ''
     try {
       const profile = await new Promise((resolve, reject) => {
         wx.getUserProfile({
-          desc: '用于展示昵称与头像',
+          desc: t('login.profileDesc'),
           success: resolve,
           fail: reject,
         })
@@ -59,10 +81,10 @@ Page({
         avatarUrl = profile.userInfo.avatarUrl || ''
       }
     } catch (e) {
-      // 用户拒绝授权时使用默认昵称，仍可登录（云函数以 openid 为准）
+      /* user declined */
     }
 
-    wx.showLoading({ title: '登录中' })
+    wx.showLoading({ title: t('login.loggingIn') })
     try {
       const data = await callCloud('login', {
         nickName,
@@ -76,10 +98,10 @@ Page({
       wx.hideLoading()
       if (isNewUser) {
         wx.showModal({
-          title: '欢迎使用 NeverBroke',
-          content: '先创建一个账户（如工资卡或微信零钱），即可开始记账。',
-          confirmText: '去创建',
-          cancelText: '稍后',
+          title: t('login.welcome'),
+          content: t('login.welcomeNew'),
+          confirmText: t('login.goCreate'),
+          cancelText: t('login.later'),
           success: (res) => {
             if (res.confirm) {
               wx.navigateTo({ url: '/pages/profile/accounts-new?onboarding=1' })
@@ -90,14 +112,14 @@ Page({
         })
         return
       }
-      wx.showToast({ title: '欢迎回来', icon: 'success' })
+      wx.showToast({ title: t('login.welcomeBack'), icon: 'success' })
       wx.switchTab({ url: '/pages/index/index' })
     } catch (e) {
       wx.hideLoading()
       const msg =
         (e && e.message) ||
         (typeof e === 'string' ? e : '') ||
-        '登录失败，请检查网络与云函数是否已部署'
+        t('login.loginFailedDetail')
       wx.showToast({ title: msg, icon: 'none', duration: 3000 })
     }
   },

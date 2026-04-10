@@ -4,19 +4,45 @@ const auth = require('../../utils/auth.js')
 
 Page({
   data: {
+    i18n: {},
     startDate: '',
     endDate: '',
     url: '',
-    presetLabels: ['本月', '近3个月', '近6个月', '本年'],
+    presetLabels: [],
   },
 
   onShow() {
     if (!auth.requireLogin()) return
+    this.loadI18n()
     const end = formatDate(new Date())
     const d = new Date()
     d.setMonth(d.getMonth() - 1)
     const start = formatDate(d)
     this.setData({ startDate: start, endDate: end, url: '' })
+  },
+
+  loadI18n() {
+    const app = getApp()
+    const t = app.globalData.i18n.t.bind(app.globalData.i18n)
+
+    wx.setNavigationBarTitle({ title: t('exportData.title') })
+
+    this.setData({
+      i18n: {
+        quickRange: t('exportData.quickRange'),
+        startDate: t('exportData.startDate'),
+        endDate: t('exportData.endDate'),
+        generate: t('exportData.generate'),
+        copyLink: t('exportData.copyLink'),
+        tryOpen: t('exportData.tryOpen'),
+      },
+      presetLabels: [
+        t('exportData.presetThisMonth'),
+        t('exportData.presetLast3Months'),
+        t('exportData.presetLast6Months'),
+        t('exportData.presetThisYear'),
+      ],
+    })
   },
 
   applyPreset(e) {
@@ -50,12 +76,13 @@ Page({
   },
 
   async generate() {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     const { startDate, endDate } = this.data
     if (!startDate || !endDate || startDate > endDate) {
-      wx.showToast({ title: '日期范围无效', icon: 'none' })
+      wx.showToast({ title: t('exportData.invalidDateRange'), icon: 'none' })
       return
     }
-    wx.showLoading({ title: '生成中' })
+    wx.showLoading({ title: t('exportData.generating') })
     try {
       const data = await callCloud('dataManage', {
         action: 'exportGenerate',
@@ -65,13 +92,13 @@ Page({
       wx.hideLoading()
       this.setData({ url: data.tempFileURL || '' })
       if (!data.tempFileURL) {
-        wx.showToast({ title: '无临时链接', icon: 'none' })
+        wx.showToast({ title: t('exportData.noTempLink'), icon: 'none' })
         return
       }
-      wx.showToast({ title: `已生成 ${data.count} 条`, icon: 'success' })
+      wx.showToast({ title: t('exportData.generatedCount', [data.count]), icon: 'success' })
     } catch (e) {
       wx.hideLoading()
-      wx.showToast({ title: e.message || '失败', icon: 'none' })
+      wx.showToast({ title: e.message || t('common.failed'), icon: 'none' })
     }
   },
 
@@ -81,6 +108,7 @@ Page({
   },
 
   open() {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     const u = this.data.url
     if (!u) return
     wx.downloadFile({
@@ -89,10 +117,10 @@ Page({
         wx.openDocument({
           filePath: res.tempFilePath,
           showMenu: true,
-          fail: () => wx.showToast({ title: '无法打开', icon: 'none' }),
+          fail: () => wx.showToast({ title: t('exportData.cannotOpen'), icon: 'none' }),
         })
       },
-      fail: () => wx.showToast({ title: '下载失败', icon: 'none' }),
+      fail: () => wx.showToast({ title: t('exportData.downloadFailed'), icon: 'none' }),
     })
   },
 })

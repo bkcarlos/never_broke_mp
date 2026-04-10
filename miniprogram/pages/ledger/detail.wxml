@@ -26,11 +26,11 @@
   <block wx:for="{{list}}" wx:key="_id">
     <view class="tx-card" bindtap="onTapTx" data-id="{{item._id}}">
       <view class="tx-row">
-        <text class="tx-cat">{{item.category}}</text>
+        <text class="tx-cat">{{item.categoryLabel}}</text>
         <text class="tx-amt {{item.type}}">{{item.type === 'expense' ? '-' : item.type === 'income' ? '+' : '↔'}}{{item.displayAmount}}</text>
       </view>
       <text class="tx-note nb-muted">{{item.note || i18n.noNote}}</text>
-      <text class="tx-time nb-muted">{{item.type === 'income' ? i18n.income : item.type === 'expense' ? i18n.expense : '转账'}}</text>
+      <text class="tx-time nb-muted">{{item.type === 'income' ? i18n.income : item.type === 'expense' ? i18n.expense : i18n.transfer}}</text>
     </view>
   </block>
 

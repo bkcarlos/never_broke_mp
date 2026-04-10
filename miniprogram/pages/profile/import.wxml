@@ -1,16 +1,16 @@
 <view class="page">
   <view class="nb-card">
-    <text class="nb-muted">支持 CSV（UTF-8），表头含 date/日期, type/类型, amount/金额, category/分类, note/备注。导入仅写入流水，不会自动调整账户余额，导入后请在账户管理中核对余额。</text>
-    <button bindtap="pickFile">选择文件</button>
-    <text wx:if="{{fileName}}" class="nb-muted">已选：{{fileName}}</text>
+    <text class="nb-muted">{{i18n.hint}}</text>
+    <button bindtap="pickFile">{{i18n.selectFileBtn}}</button>
+    <text wx:if="{{fileName}}" class="nb-muted">{{selectedFileLine}}</text>
   </view>
   <view class="field">
-    <text class="label">默认入账账户</text>
+    <text class="label">{{i18n.defaultAccount}}</text>
     <account-picker accounts="{{accounts}}" value="{{accountId}}" bind:change="onAcc" />
   </view>
-  <button type="primary" bindtap="preview" disabled="{{!csvText}}">预览</button>
+  <button type="primary" bindtap="preview" disabled="{{!csvText}}">{{i18n.preview}}</button>
   <view wx:if="{{previewCount}}" class="nb-card">
-    <text>共 {{previewCount}} 条（预览前 50 行）</text>
-    <button type="primary" bindtap="doImport">开始导入</button>
+    <text>{{previewRowsLine}}</text>
+    <button type="primary" bindtap="doImport">{{i18n.startImport}}</button>
   </view>
 </view>

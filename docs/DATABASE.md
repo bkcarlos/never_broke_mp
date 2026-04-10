@@ -12,6 +12,7 @@
 | recurring_incomes | 周期收入 |
 | user_settings | 用户设置 |
 | salary_plans | 工资方案 |
+| notification_log | 订阅消息发送日志与去重记录 |
 
 ## 权限建议
 
@@ -23,3 +24,8 @@
 - `transactions`: `openid` + `date`
 - `budgets`: `openid` + `year` + `month`
 - `accounts`: `openid`
+- `installment_plans`: `openid` + `status`
+- `recurring_incomes`: `openid` + `nextDueDate`
+- `salary_plans`: `openid`
+- `user_settings`: `openid`
+- `notification_log`: `openid` + `type` + `date`

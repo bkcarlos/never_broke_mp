@@ -18,6 +18,11 @@ const DEFAULTS = {
   notifyInstallment: true,
   notifyRecurring: true,
   safetyLine: 0,
+  notificationPrefs: {
+    budget: { enabled: true, lastSentDate: '' },
+    installment: { enabled: true, lastSentDate: '' },
+    recurring: { enabled: true, lastSentDate: '' },
+  },
 }
 
 exports.main = async (event) => {

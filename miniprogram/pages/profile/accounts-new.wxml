@@ -1,10 +1,10 @@
 <view class="page">
   <view class="onboard-tip" wx:if="{{onboarding}}">
-    <text class="onboard-title">欢迎使用</text>
-    <text class="onboard-desc">创建至少一个账户后，即可在「记一笔」里选择账户并记账。</text>
+    <text class="onboard-title">{{i18n.onboardingWelcome}}</text>
+    <text class="onboard-desc">{{i18n.onboardingDesc}}</text>
   </view>
   <view class="field">
-    <text class="label">账户类型</text>
+    <text class="label">{{i18n.typeLabel}}</text>
     <scroll-view scroll-x class="type-scroll" enable-flex="{{true}}" show-scrollbar="{{false}}">
       <view class="type-group">
         <view
@@ -21,16 +21,16 @@
   </view>
 
   <view class="field" wx:if="{{type==='bank' || type==='credit' || type==='savings'}}">
-    <text class="label">机构 / 发卡行</text>
+    <text class="label">{{i18n.institutionBankLabel}}</text>
     <picker range="{{banks}}" value="{{bankIndex}}" bindchange="onBankPick">
-      <view class="inp">{{banks[bankIndex] || '请选择'}}</view>
+      <view class="inp">{{banks[bankIndex] || i18n.choosePlaceholder}}</view>
     </picker>
-    <text class="nb-muted small-tip" wx:if="{{bankIndex === banks.length - 1}}">选择「其他」时可在下方填写</text>
-    <input wx:if="{{bankIndex === banks.length - 1}}" class="inp mt" placeholder="机构名称" value="{{bank}}" bindinput="onBankInput" />
+    <text class="nb-muted small-tip" wx:if="{{bankIndex === banks.length - 1}}">{{i18n.bankOtherHint}}</text>
+    <input wx:if="{{bankIndex === banks.length - 1}}" class="inp mt" placeholder="{{i18n.institutionPlaceholder}}" value="{{bank}}" bindinput="onBankInput" />
   </view>
 
   <view class="field" wx:if="{{type==='wallet'}}">
-    <text class="label">机构</text>
+    <text class="label">{{i18n.institutionLabel}}</text>
     <scroll-view scroll-x class="type-scroll" enable-flex="{{true}}" show-scrollbar="{{false}}">
       <view class="type-group">
         <view
@@ -44,35 +44,35 @@
         </view>
       </view>
     </scroll-view>
-    <input wx:if="{{walletInstitutions[walletInstIndex].value === 'other'}}" class="inp mt" placeholder="说明" value="{{walletCustom}}" bindinput="onWalletCustom" />
+    <input wx:if="{{walletInstitutions[walletInstIndex].value === 'other'}}" class="inp mt" placeholder="{{i18n.walletCustomPlaceholder}}" value="{{walletCustom}}" bindinput="onWalletCustom" />
   </view>
 
   <view class="field" wx:if="{{type==='bank' || type==='credit' || type==='savings'}}">
-    <text class="label">卡号尾号（选填）</text>
-    <input class="inp" type="number" maxlength="4" placeholder="2–4 位数字" value="{{cardLast4}}" bindinput="onCardLast4" />
+    <text class="label">{{i18n.cardLast4Label}}</text>
+    <input class="inp" type="number" maxlength="4" placeholder="{{i18n.cardLast4Placeholder}}" value="{{cardLast4}}" bindinput="onCardLast4" />
   </view>
 
   <view class="field">
-    <text class="label">{{type === 'credit' ? '初始余额 / 已用金额' : '初始余额'}}</text>
-    <text class="nb-muted" wx:if="{{type==='credit'}}">信用卡填已用额度；可用=固定额度+临时额度-已用</text>
+    <text class="label">{{type === 'credit' ? i18n.initialBalanceUsedLabel : i18n.initialBalanceLabel}}</text>
+    <text class="nb-muted" wx:if="{{type==='credit'}}">{{i18n.creditBalanceHint}}</text>
     <block wx:for="{{[formKey]}}" wx:key="*this" wx:for-item="_fk">
       <amount-input value="{{balance}}" bind:change="onBal" />
     </block>
   </view>
   <view class="field" wx:if="{{type==='credit'}}">
-    <text class="label">固定额度</text>
+    <text class="label">{{i18n.creditLimitLabel}}</text>
     <block wx:for="{{[formKey]}}" wx:key="*this" wx:for-item="_fk">
       <amount-input value="{{creditLimit}}" bind:change="onLimit" />
     </block>
   </view>
   <view class="field" wx:if="{{type==='credit'}}">
-    <text class="label">临时额度</text>
+    <text class="label">{{i18n.tempLimitLabel}}</text>
     <block wx:for="{{[formKey]}}" wx:key="*this" wx:for-item="_fk">
       <amount-input value="{{tempLimit}}" bind:change="onTempLimit" />
     </block>
   </view>
   <view class="field">
-    <text class="label">币种</text>
+    <text class="label">{{i18n.currencyLabel}}</text>
     <scroll-view scroll-x class="type-scroll" enable-flex="{{true}}" show-scrollbar="{{false}}">
       <view class="type-group">
         <view
@@ -87,6 +87,6 @@
       </view>
     </scroll-view>
   </view>
-  <button type="primary" class="btn" bindtap="save">{{isEdit ? '保存' : '创建'}}</button>
-  <button wx:if="{{onboarding}}" class="btn-skip" bindtap="skipOnboarding">稍后再说，进入首页</button>
+  <button type="primary" class="btn" bindtap="save">{{isEdit ? i18n.saveBtn : i18n.createBtn}}</button>
+  <button wx:if="{{onboarding}}" class="btn-skip" bindtap="skipOnboarding">{{i18n.skipBtn}}</button>
 </view>

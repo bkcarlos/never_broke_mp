@@ -19,6 +19,41 @@ function monthRange(yearMonth) {
   return { start, end, y, m }
 }
 
+function normalizeCurrency(currency) {
+  return currency || 'CNY'
+}
+
+function round2(value) {
+  return Math.round(Number(value || 0) * 100) / 100
+}
+
+function ensureCurrencyBucket(map, currency) {
+  const code = normalizeCurrency(currency)
+  if (!map[code]) {
+    map[code] = {
+      income: 0,
+      expense: 0,
+      balance: 0,
+      totalExpense: 0,
+      byType: { cash: 0, bank: 0, wallet: 0, credit: 0 },
+      categories: {},
+      months: {},
+      todayExpense: 0,
+      todayCount: 0,
+      budgetTotal: 0,
+    }
+  }
+  return map[code]
+}
+
+function toCurrencyTotals(currencyMap, picker) {
+  const result = {}
+  Object.keys(currencyMap).forEach((currency) => {
+    result[currency] = picker(currencyMap[currency], currency)
+  })
+  return result
+}
+
 exports.main = async (event) => {
   const openid = cloud.getWXContext().OPENID
   if (!openid) return fail(401, '未授权')
@@ -52,54 +87,78 @@ exports.main = async (event) => {
         settingsCol.where({ openid }).limit(1).get(),
       ])
 
-      let todayExpense = 0
-      let todayCount = 0
+      const currencyMap = {}
+
       dayTx.data.forEach((t) => {
+        const bucket = ensureCurrencyBucket(currencyMap, t.currency)
         if (t.type === 'expense') {
-          todayExpense += Number(t.amount || 0)
-          todayCount += 1
+          bucket.todayExpense += Number(t.amount || 0)
+          bucket.todayCount += 1
         }
       })
 
-      let monthExpense = 0
       monthTx.data.forEach((t) => {
-        if (t.type === 'expense') monthExpense += Number(t.amount || 0)
+        const bucket = ensureCurrencyBucket(currencyMap, t.currency)
+        if (t.type === 'expense') bucket.expense += Number(t.amount || 0)
       })
 
       const budgetDoc = b.data[0]
-      const totalBudget = budgetDoc ? Number(budgetDoc.totalBudget || 0) : 0
+      if (budgetDoc) {
+        ensureCurrencyBucket(currencyMap, budgetDoc.currency).budgetTotal = Number(budgetDoc.totalBudget || 0)
+      }
 
-      const hideAmount = settingsRow.data[0] ? !!settingsRow.data[0].hideAmount : false
-      let totalAssets = 0
-      const byType = { cash: 0, bank: 0, wallet: 0, credit: 0 }
       accs.data.forEach((a) => {
+        const bucket = ensureCurrencyBucket(currencyMap, a.currency)
         if (a.type === 'credit') {
           const lim = Number(a.creditLimit || 0) + Number(a.tempLimit || 0)
           const avail = Math.max(0, lim - Number(a.balance || 0))
-          byType.credit += avail
-          totalAssets += avail
+          bucket.byType.credit += avail
         } else {
           const bal = Number(a.balance || 0)
-          totalAssets += bal
           const t = a.type === 'savings' ? 'bank' : a.type === 'investment' ? 'cash' : a.type
-          if (byType[t] !== undefined) byType[t] += bal
-          else byType.cash += bal
+          if (bucket.byType[t] !== undefined) bucket.byType[t] += bal
+          else bucket.byType.cash += bal
         }
       })
 
+      const assetsByCurrency = toCurrencyTotals(currencyMap, (bucket) => {
+        const byType = {
+          cash: round2(bucket.byType.cash),
+          bank: round2(bucket.byType.bank),
+          wallet: round2(bucket.byType.wallet),
+          credit: round2(bucket.byType.credit),
+        }
+        return {
+          total: round2(byType.cash + byType.bank + byType.wallet + byType.credit),
+          byType,
+        }
+      })
+
+      const budgetByCurrency = toCurrencyTotals(currencyMap, (bucket) => ({
+        used: round2(bucket.expense),
+        total: round2(bucket.budgetTotal),
+        remain: round2(bucket.budgetTotal - bucket.expense),
+        yearMonth: ym,
+      }))
+
+      const todayByCurrency = toCurrencyTotals(currencyMap, (bucket) => ({
+        expense: round2(bucket.todayExpense),
+        count: bucket.todayCount,
+      }))
+
+      const currencies = Object.keys(currencyMap)
+      const hideAmount = settingsRow.data[0] ? !!settingsRow.data[0].hideAmount : false
+
       return ok({
         hideAmount,
-        today: { expense: todayExpense, count: todayCount },
-        budget: {
-          used: monthExpense,
-          total: totalBudget,
-          remain: totalBudget - monthExpense,
-          yearMonth: ym,
-        },
-        assets: {
-          total: Math.round(totalAssets * 100) / 100,
-          byType,
-        },
+        currencies,
+        multiCurrency: currencies.length > 1,
+        today: todayByCurrency.CNY || { expense: 0, count: 0 },
+        todayByCurrency,
+        budget: budgetByCurrency.CNY || { used: 0, total: 0, remain: 0, yearMonth: ym },
+        budgetByCurrency,
+        assets: assetsByCurrency.CNY || { total: 0, byType: { cash: 0, bank: 0, wallet: 0, credit: 0 } },
+        assetsByCurrency,
       })
     }
 
@@ -116,17 +175,26 @@ exports.main = async (event) => {
           date: _.gte(start).and(_.lte(end)),
         })
         .get()
-      let income = 0
-      let expense = 0
+      const byCurrency = {}
       r.data.forEach((t) => {
-        if (t.type === 'income') income += Number(t.amount || 0)
-        if (t.type === 'expense') expense += Number(t.amount || 0)
+        const bucket = ensureCurrencyBucket(byCurrency, t.currency)
+        if (t.type === 'income') bucket.income += Number(t.amount || 0)
+        if (t.type === 'expense') bucket.expense += Number(t.amount || 0)
       })
+      const currencies = Object.keys(byCurrency)
+      const totals = toCurrencyTotals(byCurrency, (bucket) => ({
+        income: round2(bucket.income),
+        expense: round2(bucket.expense),
+        balance: round2(bucket.income - bucket.expense),
+      }))
       return ok({
         yearMonth: ym,
-        income: Math.round(income * 100) / 100,
-        expense: Math.round(expense * 100) / 100,
-        balance: Math.round((income - expense) * 100) / 100,
+        currencies,
+        multiCurrency: currencies.length > 1,
+        totals,
+        income: totals.CNY ? totals.CNY.income : 0,
+        expense: totals.CNY ? totals.CNY.expense : 0,
+        balance: totals.CNY ? totals.CNY.balance : 0,
       })
     }
 
@@ -144,21 +212,35 @@ exports.main = async (event) => {
           date: _.gte(start).and(_.lte(end)),
         })
         .get()
-      const map = {}
-      let total = 0
+      const byCurrency = {}
       r.data.forEach((t) => {
+        const bucket = ensureCurrencyBucket(byCurrency, t.currency)
         const c = t.category || '其他'
         const a = Number(t.amount || 0)
-        map[c] = (map[c] || 0) + a
-        total += a
+        bucket.categories[c] = (bucket.categories[c] || 0) + a
+        bucket.totalExpense += a
       })
-      const categories = Object.keys(map).map((k) => ({
-        name: k,
-        amount: Math.round(map[k] * 100) / 100,
-        ratio: total ? Math.round((map[k] / total) * 1000) / 10 : 0,
-      }))
-      categories.sort((a, b) => b.amount - a.amount)
-      return ok({ yearMonth: ym, totalExpense: Math.round(total * 100) / 100, categories })
+      const currencies = Object.keys(byCurrency)
+      const totals = toCurrencyTotals(byCurrency, (bucket) => {
+        const categories = Object.keys(bucket.categories).map((k) => ({
+          name: k,
+          amount: round2(bucket.categories[k]),
+          ratio: bucket.totalExpense ? Math.round((bucket.categories[k] / bucket.totalExpense) * 1000) / 10 : 0,
+        }))
+        categories.sort((a, b) => b.amount - a.amount)
+        return {
+          totalExpense: round2(bucket.totalExpense),
+          categories,
+        }
+      })
+      return ok({
+        yearMonth: ym,
+        currencies,
+        multiCurrency: currencies.length > 1,
+        totals,
+        totalExpense: totals.CNY ? totals.CNY.totalExpense : 0,
+        categories: totals.CNY ? totals.CNY.categories : [],
+      })
     }
 
     if (action === 'trend') {
@@ -176,11 +258,19 @@ exports.main = async (event) => {
             date: _.gte(start).and(_.lte(end)),
           })
           .get()
-        let exp = 0
+        const monthByCurrency = {}
         r.data.forEach((t) => {
-          exp += Number(t.amount || 0)
+          const currency = normalizeCurrency(t.currency)
+          monthByCurrency[currency] = (monthByCurrency[currency] || 0) + Number(t.amount || 0)
         })
-        list.push({ yearMonth: ym, expense: Math.round(exp * 100) / 100 })
+        const currencies = Object.keys(monthByCurrency)
+        list.push({
+          yearMonth: ym,
+          currencies,
+          multiCurrency: currencies.length > 1,
+          expensesByCurrency: toCurrencyTotals(monthByCurrency, (amount) => round2(amount)),
+          expense: monthByCurrency.CNY ? round2(monthByCurrency.CNY) : 0,
+        })
       }
       return ok({ list })
     }

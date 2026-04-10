@@ -1,0 +1,9 @@
+{
+  "triggers": [
+    {
+      "name": "notifyTimer",
+      "type": "timer",
+      "config": "0 9 * * * * *"
+    }
+  ]
+}

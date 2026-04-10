@@ -98,7 +98,7 @@ exports.main = async (event) => {
         incomeRecorded: {
           amount: item.amount,
           accountId: item.accountId,
-          category: '工资',
+          category: 'salary',
           note: item.name,
         },
       })

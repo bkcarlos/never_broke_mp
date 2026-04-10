@@ -38,6 +38,39 @@
   margin-bottom: 12rpx;
 }
 
+.small-label {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 24rpx;
+}
+
+.freq-scroll {
+  margin: 16rpx 0;
+  white-space: nowrap;
+}
+
+.freq-row {
+  display: inline-flex;
+  flex-direction: row;
+  gap: 16rpx;
+}
+
+.freq-chip {
+  display: inline-block;
+  padding: 12rpx 28rpx;
+  border: 1px solid #e5e5e5;
+  border-radius: 8rpx;
+  background: #fff;
+  font-size: 26rpx;
+  flex-shrink: 0;
+}
+
+.freq-chip.on {
+  border-color: #1aad19;
+  color: #1aad19;
+  background: #f6ffed;
+}
+
 .btn {
   margin-top: 24rpx;
   background: #1aad19 !important;

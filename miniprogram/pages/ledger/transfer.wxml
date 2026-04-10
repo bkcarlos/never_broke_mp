@@ -1,24 +1,26 @@
 <view class="page">
   <view class="field">
-    <text class="label">转出账户</text>
+    <text class="label">{{i18n.fromAccount}}</text>
     <account-picker accounts="{{accounts}}" value="{{fromId}}" bind:change="onFrom" />
-    <text class="hint nb-muted" wx:if="{{fromAccount}}">余额相关请见账户类型说明</text>
+    <text class="hint nb-muted" wx:if="{{fromAccount}}">{{i18n.balanceHint}}</text>
   </view>
   <view class="field">
-    <text class="label">转入账户</text>
+    <text class="label">{{i18n.toAccount}}</text>
     <account-picker accounts="{{accounts}}" value="{{toId}}" bind:change="onTo" />
   </view>
   <view class="field">
-    <text class="label">金额</text>
-    <amount-input value="{{amount}}" bind:change="onAmount" />
+    <text class="label">{{i18n.amount}}</text>
+    <block wx:for="{{[formKey]}}" wx:key="*this">
+      <amount-input value="{{amount}}" bind:change="onAmount" />
+    </block>
   </view>
   <view class="field">
-    <text class="label">日期</text>
+    <text class="label">{{i18n.date}}</text>
     <date-picker value="{{date}}" bind:change="onDate" />
   </view>
   <view class="field">
-    <text class="label">备注</text>
-    <input class="inp" placeholder="选填" value="{{note}}" bindinput="onNote" />
+    <text class="label">{{i18n.note}}</text>
+    <input class="inp" placeholder="{{i18n.notePlaceholder}}" value="{{note}}" bindinput="onNote" />
   </view>
-  <button class="save" type="primary" bindtap="save">确认转账</button>
+  <button class="save" type="primary" bindtap="save">{{i18n.confirm}}</button>
 </view>

@@ -1,6 +1,6 @@
 <view class="page">
   <view class="toolbar">
-    <navigator url="/pages/profile/accounts-new" class="add">+ 新建</navigator>
+    <navigator url="/pages/profile/accounts-new" class="add">{{i18n.new}}</navigator>
   </view>
   <scroll-view scroll-x class="filter-scroll" enable-flex="{{true}}" show-scrollbar="{{false}}">
     <view class="filter-row">
@@ -16,10 +16,10 @@
     </view>
   </scroll-view>
   <view class="empty-hint nb-muted" wx:if="{{filterKey !== 'all' && !groups.length && groupsAll.length}}">
-    该类型暂无账户
+    {{i18n.noTypeAccounts}}
   </view>
   <view class="nb-card" wx:if="{{total !== ''}}">
-    <text class="nb-muted">总资产（简算）</text>
+    <text class="nb-muted">{{i18n.totalAssets}}</text>
     <view class="big">{{total}}</view>
   </view>
   <block wx:for="{{groups}}" wx:key="type">
@@ -30,7 +30,7 @@
           <text class="name">{{acc.name}}</text>
           <text class="bal">{{acc.displayBalance}}</text>
         </view>
-        <text class="nb-muted" wx:if="{{acc.type==='credit'}}">额度 {{acc.displayLimit}} / 已用 {{acc.displayUsed}}</text>
+        <text class="nb-muted" wx:if="{{acc.type==='credit'}}">{{i18n.limit}} {{acc.displayLimit}} / {{i18n.used}} {{acc.displayUsed}}</text>
       </view>
     </block>
   </block>

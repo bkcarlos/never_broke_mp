@@ -1,10 +1,11 @@
 const { callCloud } = require('../../utils/request.js')
-const { formatMoney } = require('../../utils/format.js')
+const { formatMoneySafe, fetchHideAmount } = require('../../utils/format.js')
 const auth = require('../../utils/auth.js')
 const { drawLineCanvas } = require('../../utils/chart-draw.js')
 
 Page({
   data: {
+    i18n: {},
     days: 30,
     forecast: null,
     chartPoints: [],
@@ -13,7 +14,28 @@ Page({
 
   onShow() {
     if (!auth.requireLogin()) return
-    this.load()
+    this.loadI18n()
+    fetchHideAmount().finally(() => this.load())
+  },
+
+  loadI18n() {
+    const app = getApp()
+    const t = app.globalData.i18n.t.bind(app.globalData.i18n)
+    wx.setNavigationBarTitle({ title: t('reports.cashflow') })
+    this.setData({
+      i18n: {
+        days30: t('reports.days30'),
+        days60: t('reports.days60'),
+        days90: t('reports.days90'),
+        summary: t('reports.summary'),
+        currentBalance: t('reports.currentBalance'),
+        avgDailyExpense: t('reports.avgDailyExpense'),
+        minBalance: t('reports.minBalance'),
+        minBalanceDate: t('reports.minBalanceDate'),
+        riskHint: t('reports.riskHint'),
+        balanceTrend: t('reports.balanceTrend'),
+      },
+    })
   },
 
   setDays(e) {
@@ -41,6 +63,7 @@ Page({
   },
 
   async load() {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     try {
       const settings = await callCloud('settings', { action: 'get' }).catch(() => ({
         settings: {},
@@ -50,32 +73,48 @@ Page({
         days: this.data.days,
         safetyLine,
       })
+      if (forecast.unsupportedMixedCurrency) {
+        const currentBalanceByCurrency = forecast.currentBalanceByCurrency || {}
+        const currencies = forecast.currencies || Object.keys(currentBalanceByCurrency)
+        const balanceLines = currencies.map((currency) => ({
+          currency,
+          amount: formatMoneySafe(currentBalanceByCurrency[currency], currency),
+        }))
+        this._cfPoints = []
+        this.setData({
+          forecast: Object.assign({}, forecast, {
+            balanceLines,
+          }),
+          chartPoints: [],
+        })
+        return
+      }
       const series = forecast.series || []
       const balances = series.length ? series.map((p) => p.balance) : [0]
-      const min = Math.min(...balances, 0)
-      const max = Math.max(...balances, 1)
+      const min = Math.min.apply(null, balances.concat([0]))
+      const max = Math.max.apply(null, balances.concat([1]))
       const span = max - min || 1
       const chartPoints = series.map((p) => ({
         date: p.date,
-        balance: formatMoney(p.balance),
+        balance: formatMoneySafe(p.balance),
         pct: Math.round(((p.balance - min) / span) * 80) + 10,
       }))
       this._cfPoints = series.map((p) => ({
         label: p.date,
         value: Number(p.balance) || 0,
       }))
+      const forecastView = Object.assign({}, forecast, {
+        currentBalance: formatMoneySafe(forecast.currentBalance),
+        avgDailyExpense: formatMoneySafe(forecast.avgDailyExpense),
+        minBalance: formatMoneySafe(forecast.minBalance),
+      })
       this.setData({
-        forecast: {
-          ...forecast,
-          currentBalance: formatMoney(forecast.currentBalance),
-          avgDailyExpense: formatMoney(forecast.avgDailyExpense),
-          minBalance: formatMoney(forecast.minBalance),
-        },
+        forecast: forecastView,
         chartPoints,
       })
       this.scheduleDraw()
     } catch (e) {
-      wx.showToast({ title: e.message || '加载失败', icon: 'none' })
+      wx.showToast({ title: e.message || t('common.loadFailed'), icon: 'none' })
     }
   },
 })

@@ -38,6 +38,7 @@ function getDefaultCreateForm() {
 
 Page({
   data: {
+    i18n: {},
     types: C.ACCOUNT_TYPES,
     type: 'cash',
     bank: '',
@@ -68,7 +69,7 @@ Page({
         editId,
         isEdit: true,
       })
-      wx.setNavigationBarTitle({ title: '编辑账户' })
+      // Title will be set in loadI18n
       return
     }
     const fk = (this.data.formKey || 0) + 1
@@ -78,26 +79,75 @@ Page({
     d.editId = ''
     d.isEdit = false
     this.setData(d)
-    if (onboarding) wx.setNavigationBarTitle({ title: '创建第一个账户' })
-    else wx.setNavigationBarTitle({ title: '新建账户' })
+    // Title will be set in loadI18n
   },
 
   onShow() {
     auth.requireLogin()
+    this.loadI18n()
     if (this.data.editId && !this._accountLoaded) {
       this._accountLoaded = true
       this.loadAccount()
     }
   },
 
+  loadI18n() {
+    const app = getApp()
+    const t = app.globalData.i18n.t.bind(app.globalData.i18n)
+    const isEdit = this.data.isEdit
+    const onboarding = this.data.onboarding
+
+    let titleKey = 'accounts.createTitle'
+    if (isEdit) titleKey = 'accounts.editTitle'
+    else if (onboarding) titleKey = 'accounts.onboardingTitle'
+
+    wx.setNavigationBarTitle({ title: t(titleKey) })
+
+    // Build localized types list
+    const types = this.data.types.map((item) => ({
+      value: item.value,
+      label: t(`accounts.type${item.value.charAt(0).toUpperCase() + item.value.slice(1)}`),
+    }))
+
+    this.setData({
+      i18n: {
+        onboardingWelcome: t('accounts.onboardingWelcome'),
+        onboardingDesc: t('accounts.onboardingDesc'),
+        typeLabel: t('accounts.typeLabel'),
+        institutionBankLabel: t('accounts.institutionBankLabel'),
+        institutionLabel: t('accounts.institutionLabel'),
+        choosePlaceholder: t('accounts.choosePlaceholder'),
+        bankOtherHint: t('accounts.bankOtherHint'),
+        institutionPlaceholder: t('accounts.institutionPlaceholder'),
+        walletCustomPlaceholder: t('accounts.walletCustomPlaceholder'),
+        cardLast4Label: t('accounts.cardLast4Label'),
+        cardLast4Placeholder: t('accounts.cardLast4Placeholder'),
+        initialBalanceLabel: t('accounts.initialBalanceLabel'),
+        initialBalanceUsedLabel: t('accounts.initialBalanceUsedLabel'),
+        creditBalanceHint: t('accounts.creditBalanceHint'),
+        creditLimitLabel: t('accounts.creditLimitLabel'),
+        tempLimitLabel: t('accounts.tempLimitLabel'),
+        currencyLabel: t('accounts.currencyLabel'),
+        saveBtn: t('accounts.saveBtn'),
+        createBtn: t('accounts.createBtn'),
+        skipBtn: t('accounts.skipBtn'),
+      },
+      types,
+    })
+  },
+
   async loadAccount() {
-    wx.showLoading({ title: '加载中' })
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
+    wx.showLoading({ title: t('common.loading') })
     try {
       const data = await callCloud('account', { action: 'get', id: this.data.editId })
       const a = data.account
-      if (!a) throw new Error('账户不存在')
+      if (!a) throw new Error(t('common.recordNotFound'))
       const rawType = a.type || 'cash'
-      const types = mergeTypesForAccount(rawType)
+      const types = mergeTypesForAccount(rawType).map((item) => ({
+        value: item.value,
+        label: t(`accounts.type${item.value.charAt(0).toUpperCase() + item.value.slice(1)}`),
+      }))
       const inst = (a.institution || a.bank || '').trim()
       let bankIndex = BANKS.indexOf(inst)
       if (bankIndex < 0) {
@@ -126,7 +176,7 @@ Page({
         formKey: (this.data.formKey || 0) + 1,
       })
     } catch (e) {
-      wx.showToast({ title: e.message || '加载失败', icon: 'none' })
+      wx.showToast({ title: e.message || t('common.loadFailed'), icon: 'none' })
       setTimeout(() => wx.navigateBack(), 1500)
     } finally {
       wx.hideLoading()
@@ -199,23 +249,25 @@ Page({
   },
 
   validateBeforeSave() {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     const { type, cardLast4 } = this.data
     const inst = this.resolveInstitution()
     if (type === 'bank' || type === 'wallet' || type === 'credit') {
       if (!inst) {
-        wx.showToast({ title: '请填写机构', icon: 'none' })
+        wx.showToast({ title: t('accounts.fillInstitution'), icon: 'none' })
         return false
       }
     }
     const tail = type === 'cash' || type === 'wallet' ? '' : cardLast4
     if (tail && (tail.length < 2 || tail.length > 4)) {
-      wx.showToast({ title: '尾号须为 2–4 位数字', icon: 'none' })
+      wx.showToast({ title: t('accounts.invalidCardLast4'), icon: 'none' })
       return false
     }
     return true
   },
 
   async save() {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     const {
       type,
       balance,
@@ -231,7 +283,7 @@ Page({
 
     const institution = this.resolveInstitution()
     const cardLast4Out = type === 'cash' || type === 'wallet' ? '' : cardLast4 || ''
-    wx.showLoading({ title: isEdit ? '保存中' : '创建中' })
+    wx.showLoading({ title: isEdit ? t('common.saving') : t('accounts.creating') })
     try {
       if (isEdit && editId) {
         await callCloud('account', {
@@ -250,7 +302,7 @@ Page({
           })
         }
         wx.hideLoading()
-        wx.showToast({ title: '已保存', icon: 'success' })
+        wx.showToast({ title: t('common.saved'), icon: 'success' })
         wx.navigateBack()
         return
       }
@@ -273,7 +325,7 @@ Page({
       d2.isEdit = false
       this.setData(d2)
       wx.hideLoading()
-      wx.showToast({ title: '已创建', icon: 'success' })
+      wx.showToast({ title: t('accounts.created'), icon: 'success' })
       if (wasOnboarding) {
         setTimeout(() => {
           wx.switchTab({ url: '/pages/index/index' })
@@ -286,7 +338,7 @@ Page({
       const msg =
         (e && e.message) ||
         (typeof e === 'string' ? e : '') ||
-        '失败'
+        t('common.failed')
       wx.showToast({ title: msg, icon: 'none' })
     }
   },

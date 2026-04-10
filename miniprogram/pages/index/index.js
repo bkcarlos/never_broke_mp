@@ -1,5 +1,5 @@
 const { callCloud } = require('../../utils/request.js')
-const { formatMoney } = require('../../utils/format.js')
+const { formatMoneySafe, fetchHideAmount } = require('../../utils/format.js')
 const auth = require('../../utils/auth.js')
 
 Page({
@@ -22,6 +22,7 @@ Page({
       return
     }
     this.loadI18n()
+    await fetchHideAmount()
     const firstPaint = !this.data.overview
     if (firstPaint) {
       this.setData({ loading: true, loadError: false })
@@ -82,8 +83,7 @@ Page({
       if (pct >= 80) budgetBarClass = 'danger'
       else if (pct >= 50) budgetBarClass = 'warn'
       else if (pct > 0) budgetBarClass = 'ok'
-      const hide = hideAmount
-      const fmt = (v) => (hide ? '****' : formatMoney(v))
+      const fmt = (v) => formatMoneySafe(v)
       const app = getApp()
       const t = app.globalData.i18n.t.bind(app.globalData.i18n)
       const acc = overview.assets || {}
@@ -92,7 +92,6 @@ Page({
         Number(acc.total || 0) > 0 ||
         Object.values(byType).some((n) => Number(n) > 0)
       this.setData({
-        hideAmount,
         overview,
         loadError: false,
         noAccounts: !hasAnyAccount,

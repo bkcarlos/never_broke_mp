@@ -1,6 +1,6 @@
 <view class="page">
   <view class="quick-row" wx:if="{{!isEdit}}">
-    <text class="quick-label">常用</text>
+    <text class="quick-label">{{i18n.quickLabel}}</text>
     <scroll-view class="quick-scroll" scroll-x="true" show-scrollbar="{{false}}">
       <view
         class="quick-chip"
@@ -13,41 +13,43 @@
   </view>
 
   <view class="tabs">
-    <view class="tab {{kind==='expense'?'on':''}} {{isEdit?'disabled':''}}" data-k="expense" bindtap="setKind">支出</view>
-    <view class="tab {{kind==='income'?'on':''}} {{isEdit?'disabled':''}}" data-k="income" bindtap="setKind">收入</view>
+    <view class="tab {{kind==='expense'?'on':''}} {{isEdit?'disabled':''}}" data-k="expense" bindtap="setKind">{{i18n.expense}}</view>
+    <view class="tab {{kind==='income'?'on':''}} {{isEdit?'disabled':''}}" data-k="income" bindtap="setKind">{{i18n.income}}</view>
   </view>
 
   <view class="field">
-    <text class="label">金额</text>
-    <amount-input value="{{amount}}" bind:change="onAmount" />
+    <text class="label">{{i18n.amount}}</text>
+    <block wx:for="{{[formKey]}}" wx:key="*this">
+      <amount-input value="{{amount}}" bind:change="onAmount" />
+    </block>
   </view>
   <view class="field">
-    <text class="label">分类</text>
+    <text class="label">{{i18n.category}}</text>
     <category-picker categories="{{categories}}" value="{{category}}" bind:change="onCategory" />
   </view>
   <view class="field">
-    <text class="label">账户</text>
+    <text class="label">{{i18n.account}}</text>
     <account-picker accounts="{{accounts}}" value="{{accountId}}" bind:change="onAccount" />
   </view>
   <view class="field">
-    <text class="label">日期</text>
+    <text class="label">{{i18n.date}}</text>
     <date-picker value="{{date}}" bind:change="onDate" />
   </view>
   <view class="field">
-    <text class="label">备注</text>
-    <input class="inp" placeholder="选填" value="{{note}}" bindinput="onNote" />
+    <text class="label">{{i18n.note}}</text>
+    <input class="inp" placeholder="{{i18n.notePlaceholder}}" value="{{note}}" bindinput="onNote" />
   </view>
 
   <view class="field row" wx:if="{{kind==='expense'}}">
     <label class="chk-wrap">
       <checkbox checked="{{createInstallment}}" bindtap="toggleInst" />
-      <text>创建分期</text>
+      <text>{{i18n.createInstallment}}</text>
     </label>
   </view>
   <view class="field" wx:if="{{kind==='expense' && createInstallment}}">
-    <text class="label">分期期数</text>
-    <input class="inp" type="number" placeholder="如 6" value="{{installments}}" bindinput="onInst" />
+    <text class="label">{{i18n.installmentPeriods}}</text>
+    <input class="inp" type="number" placeholder="{{i18n.installmentPlaceholder}}" value="{{installments}}" bindinput="onInst" />
   </view>
 
-  <button class="save" type="primary" bindtap="save">{{isEdit ? '保存修改' : '保存'}}</button>
+  <button class="save" type="primary" bindtap="save">{{isEdit ? i18n.saveEdit : i18n.save}}</button>
 </view>

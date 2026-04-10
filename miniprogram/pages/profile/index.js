@@ -10,6 +10,8 @@ Page({
     if (!auth.requireLogin()) return
     this.setData({ user: auth.getStoredUser() || {} })
     this.loadI18n()
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
+    wx.setNavigationBarTitle({ title: t('profile.pageTitle') })
   },
 
   loadI18n() {

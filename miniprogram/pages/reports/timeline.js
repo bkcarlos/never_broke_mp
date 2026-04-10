@@ -1,6 +1,7 @@
 const { callCloud } = require('../../utils/request.js')
-const { formatMoney, formatDate } = require('../../utils/format.js')
+const { formatMoneySafe, fetchHideAmount, formatDate } = require('../../utils/format.js')
 const auth = require('../../utils/auth.js')
+const { getCategoryLabel } = require('../../utils/category-label-helper.js')
 
 function addDays(dateStr, n) {
   const [y, m, d] = dateStr.split('-').map(Number)
@@ -11,19 +12,46 @@ function addDays(dateStr, n) {
 
 Page({
   data: {
+    i18n: {},
     mode: 'past',
     pastList: [],
     futureList: [],
     pastDays: 60,
-    pastRangeLabels: ['近30天', '近60天', '近90天'],
+    pastRangeLabels: [],
     pastRangeIndex: 1,
     expandedDate: '',
   },
 
   onShow() {
     if (!auth.requireLogin()) return
-    this.loadPast()
-    this.loadFuture()
+    this.loadI18n()
+    fetchHideAmount().finally(() => {
+      this.loadPast()
+      this.loadFuture()
+    })
+  },
+
+  loadI18n() {
+    const app = getApp()
+    const t = app.globalData.i18n.t.bind(app.globalData.i18n)
+    wx.setNavigationBarTitle({ title: t('reports.timeline') })
+    this.setData({
+      pastRangeLabels: [t('reports.past30Days'), t('reports.past60Days'), t('reports.past90Days')],
+      i18n: {
+        history: t('reports.history'),
+        future: t('reports.future'),
+        noRecords: t('reports.noRecords'),
+        noFuturePlans: t('reports.noFuturePlans'),
+        income: t('reports.income'),
+        expense: t('reports.expense'),
+        viewDetail: t('reports.viewDetail'),
+        expandHint: t('reports.expandHint'),
+        projectedIncome: t('reports.projectedIncome'),
+        projectedExpense: t('reports.projectedExpense'),
+        noDetail: t('reports.noDetail'),
+        detailFailed: t('reports.detailFailed'),
+      },
+    })
   },
 
   setMode(e) {
@@ -45,6 +73,7 @@ Page({
   },
 
   async loadPast() {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     const end = formatDate(new Date())
     const start = addDays(end, -this.data.pastDays)
     try {
@@ -53,18 +82,26 @@ Page({
         startDate: start,
         endDate: end,
       })
-      const pastList = (data.list || []).map((x) => ({
-        ...x,
-        income: formatMoney(x.income),
-        expense: formatMoney(x.expense),
-      }))
+      const src = data.list || []
+      const pastList = []
+      for (var i = 0; i < src.length; i++) {
+        var x = src[i]
+        pastList.push(
+          Object.assign({}, x, {
+            income: formatMoneySafe(x.income),
+            expense: formatMoneySafe(x.expense),
+            countLabel: t('reports.countRecords', String(x.count)),
+          }),
+        )
+      }
       this.setData({ pastList })
     } catch (e) {
-      wx.showToast({ title: e.message || '加载失败', icon: 'none' })
+      wx.showToast({ title: e.message || t('common.loadFailed'), icon: 'none' })
     }
   },
 
   async loadFuture() {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     try {
       const [rec, ins] = await Promise.all([
         callCloud('recurring', { action: 'projected', days: 120 }),
@@ -75,16 +112,17 @@ Page({
         if (!map[p.date]) map[p.date] = { date: p.date, inflows: [], outflows: [] }
         map[p.date].inflows.push({
           name: p.name,
-          amount: formatMoney(p.amount),
+          amount: formatMoneySafe(p.amount),
         })
       })
       ;(ins.list || []).forEach((plan) => {
         ;(plan.schedule || []).forEach((s) => {
           if (s.paid) return
           if (!map[s.date]) map[s.date] = { date: s.date, inflows: [], outflows: [] }
+          const title = plan.title || t('reports.installmentDefault')
           map[s.date].outflows.push({
-            name: `${plan.title || '分期'} 第${s.index}期`,
-            amount: formatMoney(s.amount),
+            name: t('reports.installmentItem', title, String(s.index)),
+            amount: formatMoneySafe(s.amount),
           })
         })
       })
@@ -98,23 +136,24 @@ Page({
   },
 
   async showDetail(e) {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     const date = e.currentTarget.dataset.date
     try {
       const data = await callCloud('report', {
         action: 'timelineDailyDetail',
         date,
       })
-      const lines = (data.list || []).map((t) => {
-        const sign = t.type === 'expense' ? '-' : t.type === 'income' ? '+' : '↔'
-        return `${t.category} ${sign}${formatMoney(t.amount)}`
+      const lines = (data.list || []).map((row) => {
+        const sign = row.type === 'expense' ? '-' : row.type === 'income' ? '+' : '↔'
+        return getCategoryLabel(row.category) + ' ' + sign + formatMoneySafe(row.amount)
       })
       wx.showModal({
         title: date,
-        content: lines.join('\n') || '无记录',
+        content: lines.join('\n') || t('reports.noDetail'),
         showCancel: false,
       })
     } catch (err) {
-      wx.showToast({ title: err.message || '失败', icon: 'none' })
+      wx.showToast({ title: err.message || t('reports.detailFailed'), icon: 'none' })
     }
   },
 })

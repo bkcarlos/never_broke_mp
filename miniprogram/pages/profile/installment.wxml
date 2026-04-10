@@ -1,40 +1,51 @@
 <view class="page">
   <view class="nb-card">
-    <view class="nb-title">分期预览</view>
-    <amount-input value="{{previewTotal}}" bind:change="onPrevTotal" />
-    <picker range="{{instOpts}}" value="{{instIdx}}" bindchange="onInstPick">
-      <view class="inp mt">{{instOpts[instIdx]}} 期</view>
-    </picker>
-    <button class="btn-prev" size="mini" type="primary" bindtap="doPreview">预览计划</button>
+    <view class="nb-title">{{i18n.previewTitle}}</view>
+    <block wx:for="{{[formKey]}}" wx:key="*this">
+      <amount-input value="{{previewTotal}}" bind:change="onPrevTotal" />
+    </block>
+    <scroll-view class="inst-scroll" scroll-x="true" show-scrollbar="{{false}}">
+      <view class="inst-row">
+        <view
+          wx:for="{{instOpts}}"
+          wx:for-index="ii"
+          wx:key="*this"
+          class="inst-chip {{instIdx === ii ? 'on' : ''}}"
+          data-i="{{ii}}"
+          bindtap="pickInst"
+        >{{item}} {{i18n.periodsUnit}}</view>
+      </view>
+    </scroll-view>
+    <button class="btn-prev" size="mini" type="primary" bindtap="doPreview">{{i18n.previewPlanBtn}}</button>
     <view wx:if="{{preview}}" class="preview-result nb-muted">
-      <text>每期约 {{preview.perAmount}}，首期 {{preview.firstDate}}，末期 {{preview.lastDate}}</text>
+      <text>{{preview.summaryText}}</text>
     </view>
   </view>
 
-  <view class="section">进行中的分期</view>
-  <view wx:if="{{!activePlans.length}}" class="empty nb-muted">暂无进行中的分期</view>
+  <view class="section">{{i18n.activeSection}}</view>
+  <view wx:if="{{!activePlans.length}}" class="empty nb-muted">{{i18n.noActivePlans}}</view>
   <block wx:for="{{activePlans}}" wx:key="_id">
     <view class="nb-card plan-card">
       <view class="row">
         <text class="title">{{item.title}}</text>
-        <text class="badge">已还 {{item.paidInstallments}}/{{item.installments}}</text>
+        <text class="badge">{{item.badgePaid}}</text>
       </view>
-      <view class="nb-muted">总额 {{item.totalAmountFmt}}</view>
+      <view class="nb-muted">{{item.totalLine}}</view>
       <view class="plan-actions">
-        <button size="mini" bindtap="showPlanDetail" data-id="{{item._id}}">查看明细</button>
-        <button size="mini" type="primary" bindtap="payNext" data-id="{{item._id}}">标记下期已还</button>
+        <button size="mini" bindtap="showPlanDetail" data-id="{{item._id}}">{{i18n.viewSchedule}}</button>
+        <button size="mini" type="primary" bindtap="payNext" data-id="{{item._id}}">{{i18n.markNextPaid}}</button>
       </view>
     </view>
   </block>
 
-  <view class="section" wx:if="{{donePlans.length}}">已完成</view>
+  <view class="section" wx:if="{{donePlans.length}}">{{i18n.completedSection}}</view>
   <block wx:for="{{donePlans}}" wx:key="_id">
     <view class="nb-card done" bindtap="showPlanDetail" data-id="{{item._id}}">
       <view class="row">
         <text class="title muted">{{item.title}}</text>
-        <text class="nb-muted">已完成</text>
+        <text class="nb-muted">{{i18n.completedStatus}}</text>
       </view>
-      <view class="nb-muted">总额 {{item.totalAmountFmt}}</view>
+      <view class="nb-muted">{{item.totalLine}}</view>
     </view>
   </block>
 </view>

@@ -1,23 +1,22 @@
 <view class="wrap">
   <view class="brand">
     <image class="logo" src="/images/neverbroke-logo.svg" mode="aspectFit" />
-    <text class="sub">认知翻身账</text>
-    <text class="name">NeverBroke</text>
-    <text class="slogan">从糊涂花钱到心里有数</text>
-    <text class="slogan slogan-accent">现金流往上走</text>
+    <text class="sub">{{i18n.tagline}}</text>
+    <text class="name">{{i18n.productName}}</text>
+    <text class="slogan">{{i18n.subtitle}}</text>
   </view>
 
   <view class="login-footer">
-    <button class="btn-main" type="primary" bindtap="onWechatLogin">微信一键登录</button>
+    <button class="btn-main" type="primary" bindtap="onWechatLogin">{{i18n.wechatLoginBtn}}</button>
 
     <view class="agree">
       <view class="agree-row">
         <checkbox class="agree-check" checked="{{agreed}}" bindtap="toggleAgree" />
         <view class="agree-texts">
-          <text class="agree-plain">已阅读并同意</text>
-          <text class="link" catchtap="showTerms">《用户协议》</text>
-          <text class="agree-plain">与</text>
-          <text class="link" catchtap="showPrivacy">《隐私政策》</text>
+          <text class="agree-plain">{{i18n.agreeRead}}</text>
+          <text class="link" catchtap="showTerms">{{i18n.userTerms}}</text>
+          <text class="agree-plain">{{i18n.connect}}</text>
+          <text class="link" catchtap="showPrivacy">{{i18n.privacy}}</text>
         </view>
       </view>
     </view>

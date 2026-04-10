@@ -1,6 +1,6 @@
 <view class="page">
   <view class="nb-card">
-    <text class="label">快捷范围</text>
+    <text class="label">{{i18n.quickRange}}</text>
     <view class="preset-row">
       <button
         wx:for="{{presetLabels}}"
@@ -11,17 +11,17 @@
         bindtap="applyPreset"
       >{{item}}</button>
     </view>
-    <text class="label">开始日期</text>
+    <text class="label">{{i18n.startDate}}</text>
     <picker mode="date" value="{{startDate}}" bindchange="onStart">
       <view class="inp">{{startDate}}</view>
     </picker>
-    <text class="label">结束日期</text>
+    <text class="label">{{i18n.endDate}}</text>
     <picker mode="date" value="{{endDate}}" bindchange="onEnd">
       <view class="inp">{{endDate}}</view>
     </picker>
-    <button type="primary" bindtap="generate">生成 CSV 并获取下载链接</button>
+    <button type="primary" bindtap="generate">{{i18n.generate}}</button>
     <text wx:if="{{url}}" class="nb-muted break">{{url}}</text>
-    <button wx:if="{{url}}" size="mini" bindtap="copy">复制链接</button>
-    <button wx:if="{{url}}" size="mini" bindtap="open">尝试打开</button>
+    <button wx:if="{{url}}" size="mini" bindtap="copy">{{i18n.copyLink}}</button>
+    <button wx:if="{{url}}" size="mini" bindtap="open">{{i18n.tryOpen}}</button>
   </view>
 </view>

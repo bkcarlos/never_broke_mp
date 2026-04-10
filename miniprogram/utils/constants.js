@@ -1,18 +1,57 @@
-/** 支出分类 */
+/** 支出分类 key（稳定存储值） */
 const EXPENSE_CATEGORIES = [
-  '餐饮',
-  '交通',
-  '购物',
-  '娱乐',
-  '医疗',
-  '教育',
-  '住房',
-  '通讯',
-  '其他',
+  'food',
+  'transport',
+  'shopping',
+  'entertainment',
+  'medical',
+  'education',
+  'housing',
+  'communication',
+  'other_expense',
 ]
 
-/** 收入分类 */
-const INCOME_CATEGORIES = ['工资', '奖金', '投资收益', '兼职', '红包', '其他']
+/** 收入分类 key（稳定存储值） */
+const INCOME_CATEGORIES = ['salary', 'bonus', 'investment', 'part_time', 'gift', 'other_income']
+
+/** 兼容旧数据：中文分类 -> 稳定 key */
+const LEGACY_CATEGORY_KEY_MAP = {
+  餐饮: 'food',
+  交通: 'transport',
+  购物: 'shopping',
+  娱乐: 'entertainment',
+  医疗: 'medical',
+  教育: 'education',
+  住房: 'housing',
+  通讯: 'communication',
+  其他: 'other_expense',
+  工资: 'salary',
+  奖金: 'bonus',
+  投资收益: 'investment',
+  兼职: 'part_time',
+  红包: 'gift',
+  转账: 'transfer',
+}
+
+/** 兼容 key 的中文回退文案 */
+const CATEGORY_FALLBACK_LABELS = {
+  food: '餐饮',
+  transport: '交通',
+  shopping: '购物',
+  entertainment: '娱乐',
+  medical: '医疗',
+  education: '教育',
+  housing: '住房',
+  communication: '通讯',
+  other_expense: '其他',
+  salary: '工资',
+  bonus: '奖金',
+  investment: '投资收益',
+  part_time: '兼职',
+  gift: '红包',
+  other_income: '其他',
+  transfer: '转账',
+}
 
 /** 账户类型（与后端一致：cash / bank / wallet / credit） */
 const ACCOUNT_TYPES = [
@@ -106,6 +145,8 @@ const CURRENCIES = ['CNY', 'HKD', 'USD', 'EUR']
 module.exports = {
   EXPENSE_CATEGORIES,
   INCOME_CATEGORIES,
+  LEGACY_CATEGORY_KEY_MAP,
+  CATEGORY_FALLBACK_LABELS,
   ACCOUNT_TYPES,
   LEGACY_ACCOUNT_TYPES,
   ACCOUNT_TYPE_LABELS,
