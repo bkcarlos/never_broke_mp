@@ -4,6 +4,15 @@
     <picker wx:if="{{regions.length}}" range="{{regions}}" range-key="name" value="{{ri}}" bindchange="onRegion">
       <view class="inp">{{regions[ri].name}}</view>
     </picker>
+    <picker mode="selector" range="{{yearOptions}}" value="{{yearIndex}}" bindchange="onStartYear">
+      <view class="inp">{{i18n.startYear}}：{{startYear}}</view>
+    </picker>
+    <picker mode="selector" range="{{monthOptions}}" value="{{startMonth - 1}}" bindchange="onStartMonth">
+      <view class="inp">{{i18n.startMonth}}：{{startMonth}}</view>
+    </picker>
+    <picker mode="selector" range="{{previewMonthOptions}}" value="{{previewMonthIndex}}" bindchange="onPreviewMonths">
+      <view class="inp">{{i18n.previewMonths}}：{{previewMonthOptions[previewMonthIndex]}}</view>
+    </picker>
     <input class="inp" type="digit" placeholder="{{i18n.grossSalary}}" value="{{gross}}" bindinput="onGross" />
     <button type="primary" bindtap="calc">{{i18n.calculate}}</button>
     <view wx:if="{{result}}" class="result">
@@ -15,6 +24,18 @@
       <text class="line">{{i18n.labelIit}} -{{result.iit}}</text>
       <text class="line strong">{{i18n.labelNet}} {{result.net}}</text>
       <text class="nb-muted">{{result.disclaimer}}</text>
+      <view wx:if="{{result.forecast && result.forecast.length}}" class="forecast-block">
+        <view class="forecast-title">{{i18n.forecastTitle}}</view>
+        <text class="nb-muted block">{{i18n.forecastSubtitle}}</text>
+        <block wx:for="{{result.forecast}}" wx:key="monthLabel">
+          <view class="forecast-row">
+            <text class="forecast-month">{{item.monthLabel}}</text>
+            <text class="forecast-item">{{i18n.monthGross}} {{item.grossText}}</text>
+            <text class="forecast-item">{{i18n.monthTax}} {{item.taxText}}</text>
+            <text class="forecast-item strong">{{i18n.monthNet}} {{item.netText}}</text>
+          </view>
+        </block>
+      </view>
     </view>
     <button wx:if="{{result}}" size="mini" bindtap="savePlan">{{i18n.saveAsPlan}}</button>
   </view>
