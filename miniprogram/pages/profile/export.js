@@ -8,6 +8,9 @@ Page({
     startDate: '',
     endDate: '',
     url: '',
+    exportCount: 0,
+    hasJustCopied: false,
+    hasDownloaded: false,
     presetLabels: [],
   },
 
@@ -18,7 +21,7 @@ Page({
     const d = new Date()
     d.setMonth(d.getMonth() - 1)
     const start = formatDate(d)
-    this.setData({ startDate: start, endDate: end, url: '' })
+    this.resetExportResult({ startDate: start, endDate: end })
   },
 
   loadI18n() {
@@ -34,7 +37,11 @@ Page({
         endDate: t('exportData.endDate'),
         generate: t('exportData.generate'),
         copyLink: t('exportData.copyLink'),
+        copied: t('exportData.copied'),
         tryOpen: t('exportData.tryOpen'),
+        successTitle: t('exportData.successTitle'),
+        successDesc: t('exportData.successDesc', [this.data.exportCount]),
+        linkExpired: t('exportData.linkExpired'),
       },
       presetLabels: [
         t('exportData.presetThisMonth'),
@@ -43,6 +50,30 @@ Page({
         t('exportData.presetThisYear'),
         t('exportData.presetAll'),
       ],
+    })
+  },
+
+  resetExportResult(extra = {}) {
+    this.setData({
+      url: '',
+      exportCount: 0,
+      hasJustCopied: false,
+      hasDownloaded: false,
+      ...extra,
+    })
+  },
+
+  setExportResult(data) {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
+    this.setData({
+      url: data.tempFileURL || '',
+      exportCount: Number(data.count) || 0,
+      hasJustCopied: false,
+      hasDownloaded: false,
+      i18n: {
+        ...this.data.i18n,
+        successDesc: t('exportData.successDesc', [Number(data.count) || 0]),
+      },
     })
   },
 
@@ -64,18 +95,18 @@ Page({
     } else {
       s = now
     }
-    this.setData({
+    this.resetExportResult({
       startDate: formatDate(s),
       endDate: end,
-      url: '',
     })
   },
 
   onStart(e) {
-    this.setData({ startDate: e.detail.value })
+    this.resetExportResult({ startDate: e.detail.value })
   },
+
   onEnd(e) {
-    this.setData({ endDate: e.detail.value })
+    this.resetExportResult({ endDate: e.detail.value })
   },
 
   async generate() {
@@ -93,37 +124,67 @@ Page({
         endDate,
       })
       wx.hideLoading()
-      this.setData({ url: data.tempFileURL || '' })
       if (!data.tempFileURL) {
-        wx.showToast({ title: t('exportData.noTempLink'), icon: 'none' })
+        this.resetExportResult()
+        wx.showToast({ title: t('exportData.serverError'), icon: 'none' })
         return
       }
-      wx.showToast({ title: t('exportData.generatedCount', [data.count]), icon: 'success' })
+      this.setExportResult(data)
+      wx.showToast({ title: t('exportData.successTitle'), icon: 'success' })
     } catch (e) {
       wx.hideLoading()
-      wx.showToast({ title: e.message || t('common.failed'), icon: 'none' })
+      this.resetExportResult()
+      const message = e.message || ''
+      let title = t('common.failed')
+      if (/no data|empty/i.test(message)) {
+        title = t('exportData.noData')
+      } else if (/expired|invalid/i.test(message)) {
+        title = t('exportData.linkExpired')
+      } else if (message) {
+        title = message
+      }
+      wx.showToast({ title, icon: 'none' })
     }
   },
 
   copy() {
+    const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     if (!this.data.url) return
-    wx.setClipboardData({ data: this.data.url })
+    wx.setClipboardData({
+      data: this.data.url,
+      success: () => {
+        this.setData({ hasJustCopied: true })
+        wx.showToast({ title: t('exportData.copied'), icon: 'success' })
+      },
+      fail: () => wx.showToast({ title: t('common.failed'), icon: 'none' }),
+    })
   },
 
   open() {
     const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     const u = this.data.url
     if (!u) return
+    wx.showLoading({ title: t('exportData.generating') })
     wx.downloadFile({
       url: u,
       success: (res) => {
+        wx.hideLoading()
+        if (res.statusCode !== 200 || !res.tempFilePath) {
+          wx.showToast({ title: t('exportData.downloadFailed'), icon: 'none' })
+          return
+        }
+        this.setData({ hasDownloaded: true })
         wx.openDocument({
           filePath: res.tempFilePath,
           showMenu: true,
-          fail: () => wx.showToast({ title: t('exportData.cannotOpen'), icon: 'none' }),
+          success: () => wx.showToast({ title: t('common.success'), icon: 'success' }),
+          fail: () => wx.showToast({ title: t('exportData.openFailed'), icon: 'none' }),
         })
       },
-      fail: () => wx.showToast({ title: t('exportData.downloadFailed'), icon: 'none' }),
+      fail: () => {
+        wx.hideLoading()
+        wx.showToast({ title: t('exportData.downloadFailed'), icon: 'none' })
+      },
     })
   },
 })

@@ -11,13 +11,14 @@
 - 判断依据：占位符常量为 `your-cloud-env-id`，当前 `CLOUD_ENV_ID` 已替换为具体环境 ID。
 
 ### 2. 订阅消息模板 ID
-- 文件：`miniprogram/config/subscribe.js`
-- 当前状态：`TEMPLATE_IDS` 数组中的 3 个模板 ID 全部为空字符串
+- 文件：`miniprogram/config/subscribe.js`（前端）、`cloudfunctions/notify/subscribe.js`（云函数）
+- 当前状态：前端 `TEMPLATE_IDS` 数组中的 3 个模板 ID 全部为空字符串；云函数端 `SERVER_TEMPLATE_IDS` 同样为空
 - 结论：**尚未配置**
 - 涉及模板：
   - 预算提醒
   - 分期还款
   - 周期收入
+- 注意：两端配置已拆分为独立文件，需分别在 `miniprogram/config/subscribe.js` 和 `cloudfunctions/notify/subscribe.js` 中填入对应模板 ID
 
 ### 3. 数据库文档
 - 文件：`docs/DATABASE.md`
@@ -144,10 +145,11 @@ const TEMPLATE_IDS = [
 
 ### C. 如需启用服务端提醒
 
-当前仓库已新增 `cloudfunctions/notify` 云函数与部署参考配置，可用于预算、分期、周期收入提醒。
+当前仓库已新增 `cloudfunctions/notify` 云函数与部署参考配置，可用于预算、分期、周期收入提醒。云函数使用独立的 `cloudfunctions/notify/subscribe.js` 管理服务端模板 ID，不依赖小程序端配置。
 
 需要补充：
-- [ ] 在 `miniprogram/config/subscribe.js` 中填写前端与服务端模板 ID
+- [ ] 在 `miniprogram/config/subscribe.js` 中填写前端模板 ID（`TEMPLATE_IDS`）
+- [ ] 在 `cloudfunctions/notify/subscribe.js` 中填写服务端模板 ID（`SERVER_TEMPLATE_IDS`）
 - [ ] 部署 `cloudfunctions/notify` 云函数
 - [ ] 创建 `notification_log` 集合与索引
 - [ ] 配置定时触发器，按预算/分期/周期收入规则调度

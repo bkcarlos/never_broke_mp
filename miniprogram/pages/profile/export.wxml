@@ -20,8 +20,29 @@
       <view class="inp">{{endDate}}</view>
     </picker>
     <button type="primary" bindtap="generate">{{i18n.generate}}</button>
-    <text wx:if="{{url}}" class="nb-muted break">{{url}}</text>
-    <button wx:if="{{url}}" size="mini" bindtap="copy">{{i18n.copyLink}}</button>
-    <button wx:if="{{url}}" size="mini" bindtap="open">{{i18n.tryOpen}}</button>
+  </view>
+
+  <!-- Export success card -->
+  <view class="nb-card result-card" wx:if="{{url}}">
+    <view class="result-header">
+      <text class="result-icon">✅</text>
+      <view class="result-text">
+        <text class="result-title">{{i18n.successTitle}}</text>
+        <text class="result-desc">{{i18n.successDesc}}</text>
+      </view>
+    </view>
+    <view class="result-actions">
+      <button
+        size="mini"
+        class="result-btn"
+        type="{{hasJustCopied ? 'default' : 'primary'}}"
+        bindtap="copy"
+      >{{hasJustCopied ? i18n.copied : i18n.copyLink}}</button>
+      <button
+        size="mini"
+        class="result-btn {{hasDownloaded ? 'btn-muted' : ''}}"
+        bindtap="open"
+      >{{i18n.tryOpen}}</button>
+    </view>
   </view>
 </view>

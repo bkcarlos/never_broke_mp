@@ -11,6 +11,92 @@ function fail(code, message) {
   return { code, message, data: null }
 }
 
+/**
+ * 将完整的 CSV 文本解析为二维数组。
+ * 支持的特性：
+ *  1. UTF-8 BOM（\uFEFF）自动去除
+ *  2. 引号内可包含换行符（不会被错误切行）
+ *  3. 双引号转义：字段值内的 "" 解析为单个 "
+ *  4. \r\n / \n / 单独 \r 均作为行分隔符
+ *
+ * @param {string} text - 原始 CSV 文本
+ * @returns {string[][]} 解析后的行数组，每行为字段数组
+ */
+function parseCSV(text) {
+  // 1. 去除 UTF-8 BOM（Excel 导出常见）
+  if (text.charCodeAt(0) === 0xfeff) {
+    text = text.slice(1)
+  }
+
+  const rows = []        // 最终结果：所有已完成的行
+  let row = []           // 当前行正在积累的字段
+  let field = ''         // 当前正在解析的字段
+  let inQuotes = false   // 是否处于引号包裹内
+
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i]
+    const next = text[i + 1]
+
+    if (inQuotes) {
+      // ---- 引号内部的字符 ----
+      if (ch === '"') {
+        // 2. 转义双引号 ""：连续两个 " 解析为单个 "
+        if (next === '"') {
+          field += '"'
+          i++ // 跳过下一个 "
+        } else {
+          // 单独的 " 表示引号字段结束
+          inQuotes = false
+        }
+      } else {
+        // 引号内的一切字符（含换行）原样保留
+        field += ch
+      }
+    } else {
+      // ---- 引号外部的字符 ----
+      if (ch === '"' && field === '') {
+        // 3. 字段开头遇到 "，进入引号模式（仅当字段为空时）
+        inQuotes = true
+      } else if (ch === ',') {
+        // 字段分隔符
+        row.push(field.trim())
+        field = ''
+      } else if (ch === '\r') {
+        // \r 或 \r\n 均视为行结束
+        row.push(field.trim())
+        field = ''
+        rows.push(row)
+        row = []
+        // 跳过紧随的 \n（Windows 换行 \r\n）
+        if (next === '\n') {
+          i++
+        }
+      } else if (ch === '\n') {
+        // 单独 \n 也视为行结束（Unix / macOS 换行）
+        row.push(field.trim())
+        field = ''
+        rows.push(row)
+        row = []
+      } else {
+        field += ch
+      }
+    }
+  }
+
+  // 处理文件末尾最后一个字段 / 行（文件可能不以换行结尾）
+  if (field !== '' || row.length > 0) {
+    row.push(field.trim())
+    rows.push(row)
+  }
+
+  // 过滤掉完全为空的行（尾随空行等）
+  return rows.filter((r) => r.some((cell) => cell !== ''))
+}
+
+/**
+ * @deprecated 请直接使用 parseCSV(text)
+ * 保留此函数以兼容可能的内部调用；行为与原实现一致。
+ */
 function parseCSVLine(line) {
   const cells = []
   let cur = ''
@@ -112,19 +198,19 @@ exports.main = async (event) => {
       if (!csvText || typeof csvText !== 'string') {
         return fail(400, '缺少 csvText（文件内容文本）')
       }
-      const lines = csvText.split(/\n/).filter((l) => l.trim())
-      if (lines.length < 2) return fail(400, 'CSV 行数不足')
-      const header = parseCSVLine(lines[0]).map((h) => h.toLowerCase())
+      const rowsData = parseCSV(csvText)
+      if (rowsData.length < 2) return fail(400, 'CSV 行数不足')
+      const header = rowsData[0].map((h) => h.toLowerCase())
       const rows = []
-      for (let i = 1; i < Math.min(lines.length, 51); i++) {
-        const cells = parseCSVLine(lines[i])
+      for (let i = 1; i < Math.min(rowsData.length, 51); i++) {
+        const cells = rowsData[i]
         const row = {}
         header.forEach((h, idx) => {
           row[h] = cells[idx] || ''
         })
         rows.push(row)
       }
-      return ok({ count: lines.length - 1, preview: rows, header })
+      return ok({ count: rowsData.length - 1, preview: rows, header })
     }
 
     if (action === 'importExecute') {
@@ -137,11 +223,11 @@ exports.main = async (event) => {
       if (Array.isArray(rows) && rows.length) {
         list = rows
       } else if (csvText && typeof csvText === 'string') {
-        const lines = csvText.split(/\n/).filter((l) => l.trim())
-        if (lines.length < 2) return fail(400, 'CSV 行数不足')
-        const header = parseCSVLine(lines[0]).map((h) => h.toLowerCase())
-        for (let i = 1; i < lines.length; i++) {
-          const cells = parseCSVLine(lines[i])
+        const rowsData = parseCSV(csvText)
+        if (rowsData.length < 2) return fail(400, 'CSV 行数不足')
+        const header = rowsData[0].map((h) => h.toLowerCase())
+        for (let i = 1; i < rowsData.length; i++) {
+          const cells = rowsData[i]
           const row = {}
           header.forEach((h, idx) => {
             row[h] = cells[idx] || ''
