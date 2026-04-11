@@ -1,6 +1,29 @@
 const { callCloud } = require('../../utils/request.js')
 const auth = require('../../utils/auth.js')
 
+const PREVIEW_LIMIT = 5
+
+function formatPreviewCell(value) {
+  if (value === undefined || value === null) return '-'
+  const text = String(value).trim()
+  return text || '-'
+}
+
+function buildPreviewRows(header = [], rows = []) {
+  return rows.slice(0, PREVIEW_LIMIT).map((row, index) => ({
+    id: `${index}`,
+    values: header.map((key) => formatPreviewCell(row && row[key])),
+  }))
+}
+
+function buildResultDetails(details = []) {
+  return details.map((item, index) => ({
+    id: `${item.rowIndex || index}-${index}`,
+    rowIndex: item.rowIndex || '-',
+    reason: item.reason || '',
+  }))
+}
+
 Page({
   data: {
     i18n: {},
@@ -12,6 +35,11 @@ Page({
     previewCount: 0,
     previewRowsLine: '',
     previewReady: false,
+    previewHeader: [],
+    previewRows: [],
+    importSummary: null,
+    failedDetails: [],
+    skippedDetails: [],
   },
 
   onShow() {
@@ -31,6 +59,19 @@ Page({
         defaultAccount: t('importData.defaultAccount'),
         preview: t('importData.preview'),
         startImport: t('importData.startImport'),
+        previewTitle: t('importData.previewTitle'),
+        previewHeader: t('importData.previewHeader'),
+        previewSampleRows: t('importData.previewSampleRows', String(PREVIEW_LIMIT)),
+        noPreviewData: t('importData.noPreviewData'),
+        resultTitle: t('importData.resultTitle'),
+        summaryTotal: t('importData.summaryTotal'),
+        summarySuccess: t('importData.summarySuccess'),
+        summaryFailed: t('importData.summaryFailed'),
+        summarySkipped: t('importData.summarySkipped'),
+        failedDetailsTitle: t('importData.failedDetailsTitle'),
+        skippedDetailsTitle: t('importData.skippedDetailsTitle'),
+        rowLabel: t('importData.rowLabel'),
+        noDetails: t('importData.noDetails'),
       },
     })
   },
@@ -52,6 +93,19 @@ Page({
     this.setData({ accountId: e.detail.accountId })
   },
 
+  resetImportState() {
+    this.setData({
+      previewCount: 0,
+      previewRowsLine: '',
+      previewReady: false,
+      previewHeader: [],
+      previewRows: [],
+      importSummary: null,
+      failedDetails: [],
+      skippedDetails: [],
+    })
+  },
+
   pickFile() {
     const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
     wx.chooseMessageFile({
@@ -69,11 +123,9 @@ Page({
             this.setData({
               fileName: f.name,
               csvText: r.data,
-              previewCount: 0,
-              previewRowsLine: '',
-              previewReady: false,
               selectedFileLine: t2('importData.selectedFile', f.name),
             })
+            this.resetImportState()
           },
           fail: () => wx.showToast({ title: t('importData.readFailed'), icon: 'none' }),
         })
@@ -92,11 +144,18 @@ Page({
         action: 'importPreview',
         csvText: this.data.csvText,
       })
-      const count = data.count
+      const count = data.count || 0
+      const header = Array.isArray(data.header) ? data.header : []
+      const preview = Array.isArray(data.preview) ? data.preview : []
       this.setData({
         previewCount: count,
         previewRowsLine: t('importData.previewRows', String(count)),
         previewReady: true,
+        previewHeader: header,
+        previewRows: buildPreviewRows(header, preview),
+        importSummary: null,
+        failedDetails: [],
+        skippedDetails: [],
       })
       wx.showToast({ title: t('importData.previewDone'), icon: 'success' })
     } catch (e) {
@@ -121,11 +180,17 @@ Page({
         csvText: this.data.csvText,
         defaultAccountId: this.data.accountId,
       })
-      const successCount =
-        data && data.summary && typeof data.summary.success === 'number' ? data.summary.success : 0
+      const summary = data && data.summary ? data.summary : { total: 0, success: 0, failed: 0, skipped: 0 }
+      const failedDetails = buildResultDetails(data && data.failedDetails)
+      const skippedDetails = buildResultDetails(data && data.skippedDetails)
       wx.hideLoading()
+      this.setData({
+        importSummary: summary,
+        failedDetails,
+        skippedDetails,
+      })
       wx.showToast({
-        title: t('importData.importCountToast', String(successCount)),
+        title: t('importData.importCountToast', String(summary.success || 0)),
         icon: 'success',
       })
     } catch (e) {

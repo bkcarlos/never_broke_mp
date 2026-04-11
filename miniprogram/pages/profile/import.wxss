@@ -12,3 +12,144 @@
   color: #666;
   font-size: 26rpx;
 }
+
+.selected-file {
+  display: block;
+  margin-top: 16rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-bottom: 12rpx;
+}
+
+.subsection {
+  margin-top: 24rpx;
+}
+
+.subsection-title {
+  display: block;
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 12rpx;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 8rpx;
+}
+
+.chip {
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  background: #f3f4f6;
+  color: #555;
+  font-size: 24rpx;
+}
+
+.preview-table {
+  margin-top: 8rpx;
+  border: 1rpx solid #ececec;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.preview-row {
+  display: flex;
+  align-items: stretch;
+  border-top: 1rpx solid #f1f1f1;
+}
+
+.preview-row:first-child {
+  border-top: none;
+}
+
+.preview-row-header {
+  background: #f8f8f8;
+}
+
+.preview-index,
+.preview-cell {
+  padding: 16rpx 12rpx;
+  font-size: 24rpx;
+  color: #333;
+  border-left: 1rpx solid #f1f1f1;
+  word-break: break-all;
+  flex: 1;
+}
+
+.preview-index {
+  flex: 0 0 72rpx;
+  text-align: center;
+  border-left: none;
+  color: #888;
+}
+
+.preview-cell-header {
+  color: #666;
+  font-weight: 500;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.summary-item {
+  background: #f8f8f8;
+  border-radius: 16rpx;
+  padding: 20rpx;
+}
+
+.summary-item.success {
+  background: #eef9f0;
+}
+
+.summary-item.failed {
+  background: #fff3f3;
+}
+
+.summary-item.skipped {
+  background: #f6f6f6;
+}
+
+.summary-label {
+  display: block;
+  font-size: 24rpx;
+  color: #777;
+}
+
+.summary-value {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 36rpx;
+  font-weight: 600;
+}
+
+.detail-item {
+  padding: 16rpx 0;
+  border-top: 1rpx solid #f1f1f1;
+}
+
+.detail-item:first-child {
+  border-top: none;
+}
+
+.detail-row {
+  display: block;
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 6rpx;
+}
+
+.detail-reason {
+  display: block;
+  font-size: 26rpx;
+  color: #333;
+  line-height: 1.5;
+}

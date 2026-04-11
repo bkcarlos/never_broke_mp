@@ -52,7 +52,7 @@
     <input class="inp" type="number" maxlength="4" placeholder="{{i18n.cardLast4Placeholder}}" value="{{cardLast4}}" bindinput="onCardLast4" />
   </view>
 
-  <view class="field">
+  <view class="field" wx:if="{{editMode !== 'limit'}}">
     <text class="label">{{type === 'credit' ? i18n.initialBalanceUsedLabel : i18n.initialBalanceLabel}}</text>
     <text class="nb-muted" wx:if="{{type==='credit'}}">{{i18n.creditBalanceHint}}</text>
     <block wx:for="{{[formKey]}}" wx:key="*this" wx:for-item="_fk">
@@ -71,7 +71,7 @@
       <amount-input value="{{tempLimit}}" bind:change="onTempLimit" />
     </block>
   </view>
-  <view class="field">
+  <view class="field" wx:if="{{editMode !== 'limit'}}">
     <text class="label">{{i18n.currencyLabel}}</text>
     <scroll-view scroll-x class="type-scroll" enable-flex="{{true}}" show-scrollbar="{{false}}">
       <view class="type-group">

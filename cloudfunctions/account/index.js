@@ -82,8 +82,12 @@ exports.main = async (event) => {
     const now = db.serverDate()
 
     if (action === 'list') {
+      const showArchived = !!event.archived
+      const where = showArchived
+        ? { openid, archived: true }
+        : { openid, archived: _.neq(true) }
       const r = await col
-        .where({ openid, archived: _.neq(true) })
+        .where(where)
         .orderBy('createdAt', 'desc')
         .get()
       return ok({ list: r.data.map(withDisplayName) })

@@ -2,15 +2,80 @@
   <view class="nb-card">
     <text class="nb-muted">{{i18n.hint}}</text>
     <button bindtap="pickFile">{{i18n.selectFileBtn}}</button>
-    <text wx:if="{{fileName}}" class="nb-muted">{{selectedFileLine}}</text>
+    <text wx:if="{{fileName}}" class="nb-muted selected-file">{{selectedFileLine}}</text>
   </view>
+
   <view class="field">
     <text class="label">{{i18n.defaultAccount}}</text>
     <account-picker accounts="{{accounts}}" value="{{accountId}}" bind:change="onAcc" />
   </view>
+
   <button type="primary" bindtap="preview" disabled="{{!csvText}}">{{i18n.preview}}</button>
-  <view wx:if="{{previewCount}}" class="nb-card">
-    <text>{{previewRowsLine}}</text>
+
+  <view wx:if="{{previewReady}}" class="nb-card">
+    <view class="section-title">{{i18n.previewTitle}}</view>
+    <text class="nb-muted">{{previewRowsLine}}</text>
+
+    <view class="subsection" wx:if="{{previewHeader.length}}">
+      <text class="subsection-title">{{i18n.previewHeader}}</text>
+      <view class="chips">
+        <text wx:for="{{previewHeader}}" wx:key="*this" class="chip">{{item}}</text>
+      </view>
+    </view>
+
+    <view class="subsection">
+      <text class="subsection-title">{{i18n.previewSampleRows}}</text>
+      <view wx:if="{{previewRows.length}}" class="preview-table">
+        <view class="preview-row preview-row-header">
+          <text class="preview-index">#</text>
+          <text wx:for="{{previewHeader}}" wx:key="*this" class="preview-cell preview-cell-header">{{item}}</text>
+        </view>
+        <view wx:for="{{previewRows}}" wx:key="id" class="preview-row">
+          <text class="preview-index">{{index + 1}}</text>
+          <text wx:for="{{item.values}}" wx:key="index" class="preview-cell">{{item}}</text>
+        </view>
+      </view>
+      <text wx:else class="nb-muted">{{i18n.noPreviewData}}</text>
+    </view>
+
     <button type="primary" bindtap="doImport">{{i18n.startImport}}</button>
+  </view>
+
+  <view wx:if="{{importSummary}}" class="nb-card">
+    <view class="section-title">{{i18n.resultTitle}}</view>
+    <view class="summary-grid">
+      <view class="summary-item">
+        <text class="summary-label">{{i18n.summaryTotal}}</text>
+        <text class="summary-value">{{importSummary.total || 0}}</text>
+      </view>
+      <view class="summary-item success">
+        <text class="summary-label">{{i18n.summarySuccess}}</text>
+        <text class="summary-value">{{importSummary.success || 0}}</text>
+      </view>
+      <view class="summary-item failed">
+        <text class="summary-label">{{i18n.summaryFailed}}</text>
+        <text class="summary-value">{{importSummary.failed || 0}}</text>
+      </view>
+      <view class="summary-item skipped">
+        <text class="summary-label">{{i18n.summarySkipped}}</text>
+        <text class="summary-value">{{importSummary.skipped || 0}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{failedDetails.length}}" class="subsection">
+      <text class="subsection-title">{{i18n.failedDetailsTitle}}</text>
+      <view wx:for="{{failedDetails}}" wx:key="id" class="detail-item">
+        <text class="detail-row">{{i18n.rowLabel}}{{item.rowIndex}}</text>
+        <text class="detail-reason">{{item.reason}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{skippedDetails.length}}" class="subsection">
+      <text class="subsection-title">{{i18n.skippedDetailsTitle}}</text>
+      <view wx:for="{{skippedDetails}}" wx:key="id" class="detail-item">
+        <text class="detail-row">{{i18n.rowLabel}}{{item.rowIndex}}</text>
+        <text class="detail-reason">{{item.reason}}</text>
+      </view>
+    </view>
   </view>
 </view>

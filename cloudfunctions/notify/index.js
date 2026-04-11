@@ -1,6 +1,6 @@
 const cloud = require('wx-server-sdk')
 
-const { SERVER_TEMPLATE_IDS } = require('../../miniprogram/config/subscribe.js')
+const { SERVER_TEMPLATE_IDS } = require('./subscribe.js')
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
