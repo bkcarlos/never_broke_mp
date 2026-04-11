@@ -3,6 +3,9 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 
+const MONTHLY_STANDARD_DEDUCTION = 5000
+const PREVIEW_MONTH_OPTIONS = [12, 18, 24]
+
 function ok(data) {
   return { code: 0, message: 'ok', data }
 }
@@ -59,27 +62,114 @@ function calcIITMonthly(x) {
   return Math.round((x * 0.45 - 15160) * 100) / 100
 }
 
-function calcSalary(gross, rule) {
+function calcCumulativeTax(x) {
+  return calcIITMonthly(x)
+}
+
+function round2(n) {
+  return Math.round(Number(n || 0) * 100) / 100
+}
+
+function calcMonthlyContribution(gross, rule) {
   const base = Math.min(gross, rule.baseCap)
-  const pension = Math.round(base * rule.pensionRate * 100) / 100
-  const medical = Math.round(base * rule.medicalRate * 100) / 100
-  const unemployment = Math.round(base * rule.unemploymentRate * 100) / 100
   const fundBase = Math.min(gross, rule.fundCap)
-  const housing = Math.round(fundBase * rule.housingFundRate * 100) / 100
-  const socialTotal = pension + medical + unemployment + housing
-  const taxable = Math.max(0, gross - socialTotal - 5000)
-  const iit = calcIITMonthly(taxable)
-  const net = Math.round((gross - socialTotal - iit) * 100) / 100
+  const pension = round2(base * rule.pensionRate)
+  const medical = round2(base * rule.medicalRate)
+  const unemployment = round2(base * rule.unemploymentRate)
+  const housing = round2(fundBase * rule.housingFundRate)
+  const socialTotal = round2(pension + medical + unemployment + housing)
   return {
-    gross,
     pension,
     medical,
     unemployment,
     housingFund: housing,
-    socialTotal: Math.round(socialTotal * 100) / 100,
-    taxableIncome: Math.round(taxable * 100) / 100,
-    iit,
-    net,
+    socialTotal,
+  }
+}
+
+function normalizePreviewMonths(v) {
+  const n = Number(v)
+  return PREVIEW_MONTH_OPTIONS.includes(n) ? n : 18
+}
+
+function normalizeStartYear(v) {
+  const n = Number(v)
+  const nowYear = new Date().getFullYear()
+  if (!n || n < nowYear - 1 || n > nowYear + 5) return nowYear
+  return n
+}
+
+function normalizeStartMonth(v) {
+  const n = Number(v)
+  if (!n || n < 1 || n > 12) return new Date().getMonth() + 1
+  return n
+}
+
+function buildMonthCursor(startYear, startMonth, offset) {
+  const total = (startYear * 12 + (startMonth - 1)) + offset
+  const year = Math.floor(total / 12)
+  const month = total % 12 + 1
+  return { year, month }
+}
+
+function buildSalaryForecast(gross, rule, startYear, startMonth, previewMonths) {
+  const months = normalizePreviewMonths(previewMonths)
+  let cumulativeGross = 0
+  let cumulativeSocial = 0
+  let cumulativeTax = 0
+  const forecast = []
+
+  for (let i = 0; i < months; i++) {
+    const cursor = buildMonthCursor(startYear, startMonth, i)
+    const monthly = calcMonthlyContribution(gross, rule)
+    cumulativeGross = round2(cumulativeGross + gross)
+    cumulativeSocial = round2(cumulativeSocial + monthly.socialTotal)
+    const cumulativeDeduction = MONTHLY_STANDARD_DEDUCTION * (i + 1)
+    const cumulativeTaxableIncome = Math.max(0, round2(cumulativeGross - cumulativeSocial - cumulativeDeduction))
+    const cumulativeShouldTax = round2(calcCumulativeTax(cumulativeTaxableIncome))
+    const monthlyTax = round2(Math.max(0, cumulativeShouldTax - cumulativeTax))
+    cumulativeTax = cumulativeShouldTax
+    const net = round2(gross - monthly.socialTotal - monthlyTax)
+
+    forecast.push({
+      year: cursor.year,
+      month: cursor.month,
+      gross: round2(gross),
+      pension: monthly.pension,
+      medical: monthly.medical,
+      unemployment: monthly.unemployment,
+      housingFund: monthly.housingFund,
+      socialTotal: monthly.socialTotal,
+      cumulativeGross,
+      cumulativeDeduction,
+      cumulativeSocial,
+      cumulativeTaxableIncome,
+      cumulativeTax: cumulativeShouldTax,
+      monthlyTax,
+      net,
+    })
+  }
+
+  return forecast
+}
+
+function calcSalary(gross, rule, startYear, startMonth, previewMonths) {
+  const forecast = buildSalaryForecast(gross, rule, startYear, startMonth, previewMonths)
+  const current = forecast[0]
+  return {
+    gross: current.gross,
+    pension: current.pension,
+    medical: current.medical,
+    unemployment: current.unemployment,
+    housingFund: current.housingFund,
+    socialTotal: current.socialTotal,
+    taxableIncome: current.cumulativeTaxableIncome,
+    iit: current.monthlyTax,
+    net: current.net,
+    startYear,
+    startMonth,
+    previewMonths: forecast.length,
+    forecast,
     disclaimer: '计算结果仅供参考，以实际扣缴为准',
   }
 }
@@ -109,26 +199,36 @@ exports.main = async (event) => {
     }
 
     if (action === 'calculate') {
-      const { regionCode, grossSalary } = event
+      const { regionCode, grossSalary, startYear, startMonth, previewMonths } = event
       const gross = Number(grossSalary)
       const rule = REGION_RULES[regionCode]
       if (!rule || !gross || gross <= 0) return fail(400, '参数无效')
-      return ok(calcSalary(gross, rule))
+      const normalizedYear = normalizeStartYear(startYear)
+      const normalizedMonth = normalizeStartMonth(startMonth)
+      const normalizedPreviewMonths = normalizePreviewMonths(previewMonths)
+      return ok(calcSalary(gross, rule, normalizedYear, normalizedMonth, normalizedPreviewMonths))
     }
 
     if (action === 'savePlan') {
-      const { regionCode, grossSalary, title } = event
+      const { regionCode, grossSalary, title, startYear, startMonth, previewMonths } = event
       const gross = Number(grossSalary)
       const rule = REGION_RULES[regionCode]
       if (!rule || !gross) return fail(400, '参数无效')
-      const result = calcSalary(gross, rule)
+      const normalizedYear = normalizeStartYear(startYear)
+      const normalizedMonth = normalizeStartMonth(startMonth)
+      const normalizedPreviewMonths = normalizePreviewMonths(previewMonths)
+      const result = calcSalary(gross, rule, normalizedYear, normalizedMonth, normalizedPreviewMonths)
       const add = await planCol.add({
         data: {
           openid,
-          title: title || `${rule.name}-月薪${gross}`,
+          title: title || `${rule.name}-${normalizedYear}年${normalizedMonth}月入职-月薪${gross}`,
           regionCode,
           grossSalary: gross,
+          startYear: normalizedYear,
+          startMonth: normalizedMonth,
+          previewMonths: normalizedPreviewMonths,
           result,
+          forecast: result.forecast,
           createdAt: now,
           updatedAt: now,
         },

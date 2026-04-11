@@ -8,6 +8,13 @@ Page({
     regions: [],
     ri: 0,
     gross: '',
+    startYear: new Date().getFullYear(),
+    startMonth: new Date().getMonth() + 1,
+    previewMonthOptions: [12, 18, 24],
+    previewMonthIndex: 1,
+    yearOptions: [],
+    yearIndex: 1,
+    monthOptions: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
     result: null,
     plans: [],
   },
@@ -15,6 +22,7 @@ Page({
   onShow() {
     if (!auth.requireLogin()) return
     this.loadI18n()
+    this.initDateOptions()
     fetchHideAmount().finally(() => {
       this.loadRegions()
       this.loadPlans()
@@ -29,6 +37,14 @@ Page({
       i18n: {
         calculatorTitle: t('salary.calculatorTitle'),
         grossSalary: t('salary.grossSalary'),
+        startYear: t('salary.startYear'),
+        startMonth: t('salary.startMonth'),
+        previewMonths: t('salary.previewMonths'),
+        forecastTitle: t('salary.forecastTitle'),
+        forecastSubtitle: t('salary.forecastSubtitle'),
+        monthGross: t('salary.monthGross'),
+        monthTax: t('salary.monthTax'),
+        monthNet: t('salary.monthNet'),
         calculate: t('salary.calculate'),
         labelGross: t('salary.labelGross'),
         labelPension: t('salary.labelPension'),
@@ -43,6 +59,13 @@ Page({
         remove: t('common.delete'),
       },
     })
+  },
+
+  initDateOptions() {
+    const currentYear = new Date().getFullYear()
+    const yearOptions = [currentYear - 1, currentYear, currentYear + 1, currentYear + 2]
+    const yearIndex = Math.max(0, yearOptions.indexOf(this.data.startYear))
+    this.setData({ yearOptions, yearIndex })
   },
 
   async loadRegions() {
@@ -83,9 +106,25 @@ Page({
     this.setData({ gross: e.detail.value })
   },
 
+  onStartYear(e) {
+    const idx = Number(e.detail.value) || 0
+    const year = this.data.yearOptions[idx]
+    this.setData({ yearIndex: idx, startYear: year })
+  },
+
+  onStartMonth(e) {
+    const idx = Number(e.detail.value) || 0
+    this.setData({ startMonth: idx + 1 })
+  },
+
+  onPreviewMonths(e) {
+    const idx = Number(e.detail.value) || 0
+    this.setData({ previewMonthIndex: idx })
+  },
+
   async calc() {
     const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
-    const { regions, ri, gross } = this.data
+    const { regions, ri, gross, startYear, startMonth, previewMonthOptions, previewMonthIndex } = this.data
     const g = Number(gross)
     const code = regions[ri] && regions[ri].code
     if (!code || !g) {
@@ -97,7 +136,17 @@ Page({
         action: 'calculate',
         regionCode: code,
         grossSalary: g,
+        startYear,
+        startMonth,
+        previewMonths: previewMonthOptions[previewMonthIndex] || 18,
       })
+      const forecast = (data.forecast || []).map((item) => ({
+        ...item,
+        monthLabel: `${item.year}-${String(item.month).padStart(2, '0')}`,
+        grossText: formatMoneySafe(item.gross),
+        taxText: formatMoneySafe(item.monthlyTax),
+        netText: formatMoneySafe(item.net),
+      }))
       this.setData({
         result: {
           gross: formatMoneySafe(data.gross),
@@ -108,6 +157,7 @@ Page({
           iit: formatMoneySafe(data.iit),
           net: formatMoneySafe(data.net),
           disclaimer: data.disclaimer,
+          forecast,
           raw: data,
         },
       })
@@ -118,13 +168,16 @@ Page({
 
   async savePlan() {
     const t = getApp().globalData.i18n.t.bind(getApp().globalData.i18n)
-    const { regions, ri, gross } = this.data
+    const { regions, ri, gross, startYear, startMonth, previewMonthOptions, previewMonthIndex } = this.data
     const code = regions[ri] && regions[ri].code
     try {
       await callCloud('payroll', {
         action: 'savePlan',
         regionCode: code,
         grossSalary: Number(gross),
+        startYear,
+        startMonth,
+        previewMonths: previewMonthOptions[previewMonthIndex] || 18,
       })
       wx.showToast({ title: t('common.saved'), icon: 'success' })
       this.loadPlans()

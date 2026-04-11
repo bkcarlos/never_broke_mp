@@ -44,7 +44,33 @@
   font-weight: 600;
 }
 
-.block {
-  display: block;
-  margin-top: 8rpx;
+.forecast-block {
+  margin-top: 24rpx;
+  padding-top: 16rpx;
+  border-top: 1px solid #ececec;
 }
+
+.forecast-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+
+.forecast-row {
+  padding: 16rpx 0;
+  border-top: 1px solid #efefef;
+}
+
+.forecast-month {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+
+.forecast-item {
+  display: block;
+  font-size: 24rpx;
+  color: #555;
+  margin-bottom: 4rpx;
+}
+
